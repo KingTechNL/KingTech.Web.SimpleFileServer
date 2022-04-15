@@ -1,0 +1,12 @@
+version: "3.9"
+services:            
+    fileserver:
+        image: "kingtechnl/simplefileserver:0.1.41"
+        ports:
+          - "8045:80"
+          - "8443:443"
+        volumes:
+          - "/mnt/c/dev/_data/SimpleFileServer/Files:/files:rw"
+          - "/mnt/c/dev/_data/SimpleFileServer/Plugins/:/plugins:rw"
+        environment:
+          ENABLE_SWAGGER: "true"

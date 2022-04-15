@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>b4bb359f-9369-4870-b109-8bbd59429c8e</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KingTech.Web.SimpleFileServer.Abstract.NuGet\KingTech.Web.SimpleFileServer.Abstract.NuGet.csproj" />
+  </ItemGroup>
+
+	<PropertyGroup>
+		<DockerfileRunArguments>-v "C:/dev/_data/SimpleFileServer/Files:/files:rw" -v "C:/dev/_data/SimpleFileServer/Plugins/:/plugins:rw"</DockerfileRunArguments>
+	</PropertyGroup>
+
+</Project>

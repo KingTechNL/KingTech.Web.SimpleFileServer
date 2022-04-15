@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTech.Web.SimpleFileServer", "KingTech.Web.SimpleFileServer\KingTech.Web.SimpleFileServer.csproj", "{7CAA74B1-261E-4275-9F0F-3D4DE980070E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTech.Web.SimpleFileServer.Abstract.NuGet", "KingTech.Web.SimpleFileServer.Abstract.NuGet\KingTech.Web.SimpleFileServer.Abstract.NuGet.csproj", "{01BA3AD5-E530-43AF-B0FA-7E3295F8B94F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTech.Web.SimpleFileServer.BasicPlugins", "KingTech.Web.SimpleFileServer.BasicPlugins\KingTech.Web.SimpleFileServer.BasicPlugins.csproj", "{CA2659A1-9B93-4E5F-B351-628079A612EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{62821E71-C71C-4CA3-B335-BC20E70DDE34}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		Dockerfile_simplefileserver = Dockerfile_simplefileserver
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7CAA74B1-261E-4275-9F0F-3D4DE980070E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CAA74B1-261E-4275-9F0F-3D4DE980070E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CAA74B1-261E-4275-9F0F-3D4DE980070E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CAA74B1-261E-4275-9F0F-3D4DE980070E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01BA3AD5-E530-43AF-B0FA-7E3295F8B94F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01BA3AD5-E530-43AF-B0FA-7E3295F8B94F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01BA3AD5-E530-43AF-B0FA-7E3295F8B94F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01BA3AD5-E530-43AF-B0FA-7E3295F8B94F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA2659A1-9B93-4E5F-B351-628079A612EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA2659A1-9B93-4E5F-B351-628079A612EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA2659A1-9B93-4E5F-B351-628079A612EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA2659A1-9B93-4E5F-B351-628079A612EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A2A5395E-9944-4725-9CAA-2055BFF4853F}
+	EndGlobalSection
+EndGlobal

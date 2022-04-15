@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<RootNamespace>$(MSBuildProjectName.Replace(" ", "_").Replace(".NuGet",""))</RootNamespace>
+	<PackageId>$(MSBuildProjectName.Replace(" ", "_").Replace(".NuGet",""))</PackageId>
+	<TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<GeneratedMSBuildEditorConfigFile>$(MSBuildProjectName).GeneratedMSBuildEditorConfig.editorconfig</GeneratedMSBuildEditorConfigFile>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+		<DocumentationFile>$(MSBuildProjectName.Replace(" ", "_").Replace(".NuGet","")).xml</DocumentationFile>
+	</PropertyGroup>
+
+</Project>
