@@ -11,7 +11,7 @@ on:
 jobs:
   ## Build all projects
   build:
-    runs-on: [ubuntu-latest, self-hosted]
+    runs-on: self-hosted
 
     steps:
     ### Checkout repo
