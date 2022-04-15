@@ -4,7 +4,7 @@
 
 The SimpleFileServer is, as the name suggests, a simple file server that provides access to files via a REST API.
 Using a plugin system, the SimpleFileServer can be configured and extended with different sources. For example: The filesystem, or an sFTP server.
-Files can also be transformed using plugins. Images for example, can automatically be resized when a 'thumbnail' is requested. This way we dont need to store multiple sizes of the same image on the file system.
+Files can also be transformed using plugins. Images for example, can automatically be resized when a 'thumbnail' is requested. This way we dont need to store multiple sizes of the same image on the file system. In order to create your own plugins, the [SimpleFileServer NuGet](https://www.nuget.org/packages/KingTech.Web.SimpleFileServer.Abstract/) package can be used.
 
 # Deployment
 The SimpleFileServer can be deployed as a docker container. An example docker-compose file is provided in the repository.
@@ -27,7 +27,7 @@ FileSource plugin that uses the standard filesystem to access files.
 
 | Setting | Default | Description |
 | -- | -- | -- |
-| Name | | The name of the transformer to load. |
+| Name | | The name of the file source to load. |
 | BaseDirectory | "/files" | The base directory files are stored. Note that when deploying as docker, this points to a directory in the docker container. |
 
 ### ImageResizeTransformer
