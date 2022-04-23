@@ -1,4 +1,6 @@
 [![.NET build pipeline](https://github.com/KingTechNL/KingTech.Web.SimpleFileServer/actions/workflows/dotnet_build.yml/badge.svg)](https://github.com/KingTechNL/KingTech.Web.SimpleFileServer/actions/workflows/dotnet_build.yml)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/kingtechnl/simplefileserver?label=docker&sort=semver)](https://hub.docker.com/repository/docker/kingtechnl/simplefileserver)
+[![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/KingTech.Web.SimpleFileServer.Abstract)](https://www.nuget.org/packages/KingTech.Web.SimpleFileServer.Abstract/)
 
 # Kingtech.Web.SimpleFileServer
 
