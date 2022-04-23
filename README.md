@@ -1,4 +1,4 @@
-[![.NET build pipeline](https://github.com/GVDmeijde/KingTech.Web.SimpleFileServer/actions/workflows/dotnet_build.yml/badge.svg)](https://github.com/GVDmeijde/KingTech.Web.FrontDesk/actions/workflows/dotnet_build.yml)
+[![.NET build pipeline](https://github.com/KingTechNL/KingTech.Web.SimpleFileServer/actions/workflows/dotnet_build.yml/badge.svg)](https://github.com/KingTechNL/KingTech.Web.SimpleFileServer/actions/workflows/dotnet_build.yml)
 
 # Kingtech.Web.SimpleFileServer
 
