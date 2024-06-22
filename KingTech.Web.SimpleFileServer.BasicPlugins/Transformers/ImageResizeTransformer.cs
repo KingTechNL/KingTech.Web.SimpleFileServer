@@ -1,4 +1,6 @@
-﻿using KingTech.Web.SimpleFileServer.Abstract.Models;
+﻿using System.Collections.Immutable;
+using System.Text;
+using KingTech.Web.SimpleFileServer.Abstract.Models;
 using KingTech.Web.SimpleFileServer.Abstract.Transformers;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp.Formats;
@@ -20,11 +22,16 @@ namespace KingTech.Web.SimpleFileServer.BasicPlugins.Transformers;
 /// </summary>
 public class ImageResizeTransformer : ITransformer
 {
-    private readonly ILogger<ImageResizeTransformer> _logger;
-    private readonly ImageResizeTransformerSettings _settings;
+    private const string WidthArgumentKey = "width";
+    private const string HeightArgumentKey = "height";
+    private const string KeepAspectRatioArgumentKey = "keepaspectratio";
+    private const string ResizeModeArgumentKey = "resizemode";
 
     /// <inheritdoc cref="ITransformer"/>
     public string Name { get; } = "ImageResize";
+
+    private readonly ILogger<ImageResizeTransformer> _logger;
+    private readonly ImageResizeTransformerSettings _settings;
 
     /// <summary>
     /// Transformer to resize images.
@@ -40,67 +47,87 @@ public class ImageResizeTransformer : ITransformer
     /// <summary>
     /// Check whether or not this transformer should be applied on the file.
     /// </summary>
-    /// <param name="fileName">Name of the file, as requested by the endpoint.</param>
+    /// <param name="transformerKey">Key for the query parameter that is passed when requesting this file.</param>
     /// <param name="storedFile">StoredFile as retrieved from the file source.</param>
     /// <returns>True if transformer should be applied to the file, false otherwise.</returns>
-    public bool Match(string fileName, StoredFile storedFile)
+    public bool Match(string transformerKey, StoredFile storedFile)
     {
-        var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-        if (!nameWithoutExtension.EndsWith(_settings.PostFix))
+        //Check if file is available.
+        if (storedFile == null || string.IsNullOrWhiteSpace(transformerKey))
             return false;
-        if (storedFile == null)
+        //Check if argument matches supported arguments.
+        if(transformerKey.ToLower() != "resize" && transformerKey.ToLower() != "thumb")
             return false;
+        //Check if we can transform this file.
         if (GetEncoder(storedFile.Extension) == null)
             return false;
         return true;
     }
 
     /// <summary>
-    /// Clean up a filename as received from the user-endpoint based on the postfix or other identifiers needed by this transformer.
-    /// </summary>
-    /// <param name="fileName">The filename to clean up.</param>
-    /// <returns>The filename trimmed from all information needed for this transformer.</returns>
-    public string GetCleanFileName(string fileName)
-    {
-        var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-        var extension = Path.GetExtension(fileName);
-        if(!nameWithoutExtension.EndsWith(_settings.PostFix))
-            return fileName;
-
-        var cleanedName = nameWithoutExtension.Remove(nameWithoutExtension.Length - _settings.PostFix.Length);
-        return $"{cleanedName}{extension}";
-    }
-        
-
-    /// <summary>
     /// Resize the given image file based on the target size set in the settings.
     /// </summary>
-    /// <param name="fileName">Name of the file, as requested by the endpoint.</param>
     /// <param name="storedFile">StoredFile as retrieved from the file source.</param>
+    /// <param name="transformerKey">Key of the query parameter used to trigger the transformer.</param>
+    /// <param name="arguments">Immutable list of arguments passed in the query parameters of the original request.</param>
     /// <returns>True on success, false otherwise.</returns>
-    public bool Transform(string fileName, StoredFile storedFile)
+    public bool Transform(StoredFile storedFile, string transformerKey, ImmutableDictionary<string, IEnumerable<string?>> arguments)
     {
-        _logger.LogInformation("Resizing {fileName}: {@File} to {w}x{h} ({keepAspect}keeping aspect ratio)", 
-            fileName, storedFile, _settings.TargetWidth, _settings.TargetHeight, _settings.KeepAspectRatio ? "" : "not ");
+        switch (transformerKey.ToLower())
+        {
+            case "resize":
+                var resizeValues = GetResizeValues(arguments);
+                return Resize(storedFile, resizeValues.Width, resizeValues.Height, resizeValues.resizeMode);
+            case "thumb":
+                return Resize(storedFile, _settings.ThumbnailWidth, _settings.ThumbnailHeight,
+                    _settings.KeepThumbnailAspectRatio ? ResizeMode.Min : ResizeMode.Crop);
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
+    /// Resize the given image file based on the given dimensions and mode.
+    /// </summary>
+    /// <param name="imageFile">The file to resize.</param>
+    /// <param name="width">The new width of the file.</param>
+    /// <param name="height">The new height of the file.</param>
+    /// <param name="mode">The resize mode to apply.</param>
+    /// <returns>True on success, false otherwise.</returns>
+    private bool Resize(StoredFile imageFile, int? width, int? height, ResizeMode mode = ResizeMode.Crop)
+    {
+        //Get encoder for file.
+        var encoder = GetEncoder(imageFile.Extension);
+        if (encoder == null)
+        {
+            _logger.LogError("Cannot resize {extension} files.", imageFile.Extension);
+            return false;
+        }
 
         try
         {
-            var image = SixLabors.ImageSharp.Image.Load(storedFile.File);
+            //Load image.
+            var image = SixLabors.ImageSharp.Image.Load(imageFile.File);
+
+            _logger.LogInformation("Resizing {fileName} to {w}x{h} (resize mode: {mode})",
+                imageFile.Name, width ?? image.Width, height ?? image.Height, mode.ToString());
+
+            //Resize image.
             image.Mutate(m => m.Resize(new ResizeOptions()
             {
-                Size = new SixLabors.ImageSharp.Size(_settings.TargetWidth, _settings.TargetHeight)
+                Size = new SixLabors.ImageSharp.Size(width ?? image.Width, height ?? image.Height),
+                Mode = mode
             }));
-
             var resizedImage = new MemoryStream();
-            //image.DetectEncoder(storedFile.Location);
-            image.Save(resizedImage, GetEncoder(storedFile.Extension));
-            
-            storedFile.File = resizedImage;
+            image.Save(resizedImage, encoder);
+
+            //Replace existing (in memory) file.
+            imageFile.File = resizedImage;
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to resize image {fileName}", fileName);
+            _logger.LogError(ex, "Failed to resize image.");
             return false;
         }
     }
@@ -123,44 +150,110 @@ public class ImageResizeTransformer : ITransformer
             ".webp" => new WebpEncoder(),
             _ => null
         };
-}
-
-
-/// <summary>
-/// Settings for the <see cref="ImageResizeTransformer"/>.
-/// </summary>
-public class ImageResizeTransformerSettings : ITransformerSettings
-{
-    /// <inheritdoc/>
-    public string Name { get; set; }
-    
-    /// <summary>
-    /// If the requested filename ends with this string, this transformer will be applied.
-    /// </summary>
-    public string PostFix { get; set; } = "_thumb";
 
     /// <summary>
-    /// The width of the resulting image.
+    /// Get the resize values from the passed arguments.
     /// </summary>
-    public int TargetWidth { get; set; } = 100;
-
-    /// <summary>
-    /// The height of the resulting image.
-    /// </summary>
-    public int TargetHeight { get; set; } = 100;
-
-    /// <summary>
-    /// Whether or not to keep the image aspect ration intact.
-    /// </summary>
-    public bool KeepAspectRatio { get; set; } = true;
-
-    public bool Verify(ref List<string> errors)
+    /// <param name="arguments">The query parameters passed in the original request.</param>
+    /// <returns>The width, height and resize mode values to use for resizing.</returns>
+    private (int Width, int Height, ResizeMode resizeMode) GetResizeValues(ImmutableDictionary<string, IEnumerable<string?>> arguments)
     {
-        var errorCount = errors.Count;
+        var width = 0;
+        var height = 0;
+        var mode = ResizeMode.Crop;
 
-        if(TargetWidth <= 0 || TargetHeight <= 0)
-            errors.Add("Target sizes must be greater then 0.");
+        //Try get width from arguments.
+        if (arguments.TryGetValue(WidthArgumentKey, out var widthArgument))
+        {
+            if(widthArgument.Count() > 1)
+                _logger.LogWarning("Multiple {argumentKey} arguments found. Using first.", WidthArgumentKey);
+            if (int.TryParse(widthArgument.First(), out var parsedWidth))
+            {
+                if (parsedWidth <= 0)
+                {
+                    _logger.LogWarning("Unable to resize to width < 0!");
+                }
+                else
+                {
+                    width = parsedWidth;
+                }
+            }
+            else
+            {
+                _logger.LogError("Failed to parse width ({width}) to integer.", widthArgument);
+            }
+        }
+        else
+        {
+            _logger.LogDebug("No width argument found.");
+        }
 
-        return errorCount == errors.Count;
+        //Try get height from arguments.
+        if (arguments.TryGetValue(HeightArgumentKey, out var heightArgument))
+        {
+            if (heightArgument.Count() > 1)
+                _logger.LogWarning("Multiple {argumentKey} arguments found. Using first.", HeightArgumentKey);
+            if (int.TryParse(heightArgument.First(), out var parsedHeight))
+            {
+                if (parsedHeight <= 0)
+                {
+                    _logger.LogWarning("Unable to resize to height < 0!");
+                }
+                else
+                {
+                    height = parsedHeight;
+                }
+            }
+            else
+            {
+                _logger.LogError("Failed to parse height ({height}) to integer.", heightArgument);
+            }
+        }
+        else
+        {
+            _logger.LogDebug("No height argument found.");
+        }
+
+        //try get 'keep aspect ratio' from arguments.
+        if (arguments.TryGetValue(KeepAspectRatioArgumentKey, out var keepAspectRatioArgument))
+        {
+            if (keepAspectRatioArgument.Count() > 1)
+                _logger.LogWarning("Multiple {argumentKey} arguments found. Using first.", KeepAspectRatioArgumentKey);
+            if (keepAspectRatioArgument.FirstOrDefault() == "true")
+            {
+                mode = ResizeMode.Min;
+            }
+        }
+        else if (arguments.TryGetValue(ResizeModeArgumentKey, out var resizeModeArgument))
+        {
+            if (resizeModeArgument.Count() > 1)
+                _logger.LogWarning("Multiple {argumentKey} arguments found. Using first.", ResizeModeArgumentKey);
+
+            switch (resizeModeArgument.First())
+            {
+                case "min":
+                    mode = ResizeMode.Min;
+                    break;
+                case "max":
+                    mode = ResizeMode.Max; 
+                    break;
+                case "crop":
+                    mode = ResizeMode.Crop;
+                    break;
+                case "pad":
+                    mode = ResizeMode.Pad;
+                    break;
+                case "boxpad":
+                    mode = ResizeMode.BoxPad;
+                    break;
+                case "stretch":
+                    mode = ResizeMode.Stretch;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return (width, height, mode);
     }
 }

@@ -7,6 +7,10 @@ on:
   pull_request:
     branches: [ main, development ]
 
+# Set environment variables
+env:
+  TEST_OUTPUT: "test-results.trx"
+
 #: Jobs to execute
 jobs:
   ## Build all projects
@@ -19,7 +23,7 @@ jobs:
       with: 
         fetch-depth: 0
 
-    ### Build and publish SimpleWebServer image to dockerhub
+    ### Build and publish SimpleFileServer image to dockerhub
     - name: main action
       if: success()
       uses: kingtechnl/githubactions/base-action@main

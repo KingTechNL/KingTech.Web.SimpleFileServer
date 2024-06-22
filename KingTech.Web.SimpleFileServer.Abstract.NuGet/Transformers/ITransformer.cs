@@ -1,4 +1,5 @@
-﻿using KingTech.Web.SimpleFileServer.Abstract.Models;
+﻿using System.Collections.Immutable;
+using KingTech.Web.SimpleFileServer.Abstract.Models;
 
 namespace KingTech.Web.SimpleFileServer.Abstract.Transformers;
 
@@ -16,24 +17,18 @@ public interface ITransformer
     /// <summary>
     /// Check whether or not this transformer should be applied on the file.
     /// </summary>
-    /// <param name="fileName">Name of the file, as requested by the endpoint.</param>
+    /// <param name="transformerKey">Key of the query parameter used to trigger the transformer.</param>
     /// <param name="storedFile">StoredFile as retrieved from the file source.</param>
     /// <returns>True if transformer should be applied to the file, false otherwise.</returns>
-    public bool Match(string fileName, StoredFile storedFile);
-
-    /// <summary>
-    /// Clean up a filename as received from the user-endpoint based on the postfix or other identifiers needed by this transformer.
-    /// </summary>
-    /// <param name="fileName">The filename to clean up.</param>
-    /// <returns>The filename trimmed from all information needed for this transformer.</returns>
-    public string GetCleanFileName(string fileName);
+    public bool Match(string transformerKey, StoredFile storedFile);
 
     /// <summary>
     /// Modify the given file (e.g. resize images, change text, ...).
     /// Modification depends completely on the implementation.
     /// </summary>
-    /// <param name="fileName">Name of the file, as requested by the endpoint.</param>
     /// <param name="storedFile">StoredFile as retrieved from the file source.</param>
+    /// <param name="transformerKey">Key of the query parameter used to trigger the transformer.</param>
+    /// <param name="arguments">Immutable list of arguments passed in the query parameters of the original request.</param>
     /// <returns>Stream containing the modified file.</returns>
-    public bool Transform(string fileName, StoredFile storedFile);
+    public bool Transform(StoredFile storedFile, string transformerKey, ImmutableDictionary<string, IEnumerable<string?>> arguments);
 }

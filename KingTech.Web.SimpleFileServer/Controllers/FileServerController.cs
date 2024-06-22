@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using KingTech.Web.SimpleFileServer.Abstract.Models;
 using KingTech.Web.SimpleFileServer.Abstract.Sources;
 using KingTech.Web.SimpleFileServer.Abstract.Transformers;
@@ -10,7 +11,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
     [Route("[controller]")]
     public class FileServerController : ControllerBase
     {
-        
+        private const string TransformerParameterKey = "transform";
 
         private readonly ILogger<FileServerController> _logger;
         private readonly IEnumerable<ITransformer> _transformers;
@@ -31,45 +32,32 @@ namespace KingTech.Web.SimpleFileServer.Controllers
                 return BadRequest("Invalid file name passed");
 
             //Get file from source.
-            var cleanFileName = StripPostFixes(fileName);
-            var file = LoadFromSource(cleanFileName);
+            var file = LoadFromSource(fileName);
             
             if (file == null)
             {
-                _logger.LogError("No file found for {file} ({cleanFileName})", fileName, cleanFileName);
-                return BadRequest($"No file found for {fileName} ({cleanFileName})");
+                _logger.LogError("No file found for {file} ({cleanFileName})", fileName, fileName);
+                return BadRequest($"No file found for {fileName} ({fileName})");
             }
 
             //Transform file if needed.
-            TransForm(fileName, file);
+            var args = HttpContext.Request.Query.ToImmutableDictionary(
+                k => k.Key,
+                v => (IEnumerable<string>) v.Value.ToList());
+            Transform(file, args);
 
             //Determine the Content Type of the File.
             var contentTypeFound = new FileExtensionContentTypeProvider().TryGetContentType(fileName, out var contentType);
             if (!contentTypeFound || string.IsNullOrWhiteSpace(contentType))
             {
-                _logger.LogError("No content type found for {file} ({cleanFileName})", file, cleanFileName);
-                return BadRequest($"No content type found for {fileName} ({cleanFileName})");
+                _logger.LogError("No content type found for {file} ({cleanFileName})", file, fileName);
+                return BadRequest($"No content type found for {fileName} ({fileName})");
             }
 
-            file.File.Position = 0; //Some transformers might leave position somewhere else.
+            file.File.Position = 0; //Some transformers might leave position somewhere else. TODO: Does this need to be in the transform loop?
             var result = new FileStreamResult(file.File, contentType);
             
             return result;
-        }
-
-        /// <summary>
-        /// Strip all transformer logic from the received filename.
-        /// </summary>
-        /// <param name="fileName">The filename as received from the web request.</param>
-        /// <returns>The fileName stripped from all transformer logic.</returns>
-        private string StripPostFixes(string fileName)
-        {
-            foreach (var transformer in _transformers)
-            {
-                fileName = transformer.GetCleanFileName(fileName);
-            }
-
-            return fileName;
         }
 
         /// <summary>
@@ -93,15 +81,22 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// <summary>
         /// Transform a StoredFile using the registered transformers.
         /// </summary>
-        /// <param name="fileName">The original name of the file as called by the used.</param>
         /// <param name="file">The file to transform.</param>
-        private void TransForm(string fileName, StoredFile file)
+        /// <param name="arguments">The arguments passed in the original request, used for tranforming the file.</param>
+        private void Transform(StoredFile file, ImmutableDictionary<string, IEnumerable<string?>> arguments)
         {
-            foreach (var transformer in _transformers)
+            //Get all requested transformers.
+            if(!arguments.TryGetValue(TransformerParameterKey, out var transformers))
+                   return; //No transformation required.
+
+            foreach (var requestedTransformer in transformers)
             {
-                if (transformer.Match(fileName, file) && !transformer.Transform(fileName, file))
+                foreach (var transformer in _transformers)
                 {
-                    _logger.LogWarning("{transformer} failed to transform file {@File}", transformer.GetType().Name, file);
+                    if(transformer.Match(requestedTransformer, file) && !transformer.Transform(file, requestedTransformer, arguments))
+                    {
+                        _logger.LogWarning("{transformer} failed to transform file {@File}", transformer.GetType().Name, file);
+                    }
                 }
             }
         }
