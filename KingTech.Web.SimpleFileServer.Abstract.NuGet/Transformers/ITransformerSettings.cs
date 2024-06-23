@@ -6,10 +6,6 @@
 /// </summary>
 public interface ITransformerSettings
 {
-    /// <summary>
-    /// The name of the transformer to load.
-    /// </summary>
-    public string Name { get; set; }
 
     /// <summary>
     /// Method used to verify settings.

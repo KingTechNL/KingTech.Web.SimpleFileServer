@@ -36,8 +36,8 @@ namespace KingTech.Web.SimpleFileServer.Controllers
             
             if (file == null)
             {
-                _logger.LogError("No file found for {file} ({cleanFileName})", fileName, fileName);
-                return BadRequest($"No file found for {fileName} ({fileName})");
+                _logger.LogError("No file found for '{file}'.", fileName);
+                return BadRequest($"No file found for '{fileName}'.");
             }
 
             //Transform file if needed.

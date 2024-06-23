@@ -16,10 +16,19 @@ Additionally the project can be run as executable (.exe for windows, .dll for li
 # Usage
 
 ## File Sources
-File sources are used to fetch files from different locations, e.g. the filesystem, an sFTP server or cloud service. In order to add a new file source, simply implement the IFileSource interface and place the .dll files in the plugin directory.
+File sources are used to fetch files from different locations, e.g. the filesystem, an sFTP server or cloud service like onedrive. 
+In order to add a new file source, simply implement the IFileSource interface and place the .dll files in the plugin directory.
 
 ## Transformers
-Transformers are used to modify files if needed. Multiple transformers can be applied. In order to add one or more new Transformers, simply implement the ITransformer interface and place the .dll files in the plugin directory.
+Transformers are used to modify files if needed. Multiple transformers can be applied. 
+In order to add one or more new Transformers, simply implement the ITransformer interface and place the .dll files in the plugin directory.
+
+Transformers are typically triggered by specifying the `transform` query parameter in the http request. 
+Transformers that match this parameter will automatically be triggered, multiple transformers can be specified.
+Additional query parameters are passed to all transformers such that they may act upon them. 
+For example: When using the `transform=resize` parameter to trigger the ImageResizeTransformer, an additional `width` and `height` parameter can be passed.
+
+> https://localhost:32772/FileServer/myimage.png?transform=resize&width=150
 
 ## Basic plugins
 The SimpleFileServer comes with the following preinstalled default plugins:
@@ -29,16 +38,28 @@ FileSource plugin that uses the standard filesystem to access files.
 
 | Setting | Default | Description |
 | -- | -- | -- |
-| Name | | The name of the file source to load. |
 | BaseDirectory | "/files" | The base directory files are stored. Note that when deploying as docker, this points to a directory in the docker container. |
+| IsReadOnly | false | Whether or not the source can be written to (e.g. files can be uploaded). |
 
 ### ImageResizeTransformer
-This transformer resizes images based on the passed settings.
+This transformer resizes images server-side. 
+This can be used to limit the amount of data that is sent to the client to, for example, load thumbnails based on larger images.
+
+To trigger this transformer, the `transform=resize` query parameter can be passed in the http request.
+Additionally, a `width`, `height`, and `resizemode` query parameter can be specified. These are used to define the target width and height of the resized image, 
+and to specify what to do if the original aspect ratio does not match that of the resulting image. Available resize modes are:
+
+- *crop*: (default) Crops the resized image to fit the bounds of its container.
+- *max*: Constrains the resized image to fit the bounds of its container maintaining the original aspect ratio.
+- *min*: Resizes the image until the shortest side reaches the set given dimension. Upscaling is disabled in this mode and the original image will be returned if attempted.
+- *pad*: Pads the resized image to fit the bounds of its container. If only one dimension is passed, will maintain the original aspect ratio.
+- *boxpad*: Pads the image to fit the bound of the container without resizing the original source. When downscaling, performs the same functionality as Pad.
+- *stretch*: Stretches the resized image to fit the bounds of its container.
+
+Additionally, the 'transform=thumb' query parameter can be passed. This automatically resizes the image based on the passed settings.
 
 | Setting | Default | Description |
 | -- | -- | -- |
-| Name | | The name of the transformer to load. |
-| PostFix | "_thumb" | If the requested filename ends with this string, this transformer will be applied. |
-| TargetWidth | 100 | The width of the resulting image. |
-| TargetHeight | 100 | The height of the resulting image. |
-| KeepAspectRatio | true | Whether or not to keep the image aspect ration intact. |
+| ThumbnailWidth | 100 | The width of the resulting image. |
+| ThumbnailHeight | 100 | The height of the resulting image. |
+| KeepThumbnailAspectRatio | true | Whether or not to keep the image aspect ration intact. |

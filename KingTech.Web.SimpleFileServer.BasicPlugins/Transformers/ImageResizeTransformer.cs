@@ -80,7 +80,7 @@ public class ImageResizeTransformer : ITransformer
                 return Resize(storedFile, resizeValues.Width, resizeValues.Height, resizeValues.resizeMode);
             case "thumb":
                 return Resize(storedFile, _settings.ThumbnailWidth, _settings.ThumbnailHeight,
-                    _settings.KeepThumbnailAspectRatio ? ResizeMode.Min : ResizeMode.Crop);
+                    _settings.KeepThumbnailAspectRatio ? ResizeMode.Pad : ResizeMode.Crop);
             default:
                 return false;
         }
@@ -156,10 +156,10 @@ public class ImageResizeTransformer : ITransformer
     /// </summary>
     /// <param name="arguments">The query parameters passed in the original request.</param>
     /// <returns>The width, height and resize mode values to use for resizing.</returns>
-    private (int Width, int Height, ResizeMode resizeMode) GetResizeValues(ImmutableDictionary<string, IEnumerable<string?>> arguments)
+    private (int? Width, int? Height, ResizeMode resizeMode) GetResizeValues(ImmutableDictionary<string, IEnumerable<string?>> arguments)
     {
-        var width = 0;
-        var height = 0;
+        int? width = null;
+        int? height = null;
         var mode = ResizeMode.Crop;
 
         //Try get width from arguments.

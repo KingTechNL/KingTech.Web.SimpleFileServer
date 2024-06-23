@@ -7,9 +7,9 @@
 public interface IFileSourceSettings
 {
     /// <summary>
-    /// The name of the file source to load.
+    /// Whether or not files can be uploaded to this source.
     /// </summary>
-    public string Name { get; set; }
+    public bool IsReadOnly { get; set; }
 
     /// <summary>
     /// Method used to verify settings.

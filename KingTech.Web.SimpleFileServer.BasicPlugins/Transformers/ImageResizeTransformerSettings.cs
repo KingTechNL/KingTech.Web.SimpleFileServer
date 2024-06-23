@@ -7,8 +7,6 @@ namespace KingTech.Web.SimpleFileServer.BasicPlugins.Transformers;
 /// </summary>
 public class ImageResizeTransformerSettings : ITransformerSettings
 {
-    /// <inheritdoc/>
-    public string Name { get; set; } = nameof(ImageResizeTransformer);
 
     /// <summary>
     /// The width of the resulting image.
