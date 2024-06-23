@@ -15,7 +15,8 @@ env:
 jobs:
   ## Build all projects
   build:
-    runs-on: self-hosted
+    #runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     ### Checkout repo
