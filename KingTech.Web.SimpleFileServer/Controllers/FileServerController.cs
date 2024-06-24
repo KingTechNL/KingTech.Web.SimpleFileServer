@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Web;
 using KingTech.Web.SimpleFileServer.Abstract.Models;
 using KingTech.Web.SimpleFileServer.Abstract.Sources;
 using KingTech.Web.SimpleFileServer.Abstract.Transformers;
@@ -24,7 +25,14 @@ namespace KingTech.Web.SimpleFileServer.Controllers
             _sources = sources;
         }
 
+        /// <summary>
+        /// Get a specific file from the file server.
+        /// </summary>
+        /// <param name="fileName">The name of the file to fetch, including its path from the base directory.</param>
+        /// <returns>The specified file from the server as a file-stream.</returns>
         [HttpGet("{fileName}")]
+        [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Get(string fileName)
         {
             //Check parameters
@@ -32,6 +40,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
                 return BadRequest("Invalid file name passed");
 
             //Get file from source.
+            fileName = HttpUtility.UrlDecode(fileName);
             var file = LoadFromSource(fileName);
             
             if (file == null)
@@ -58,6 +67,73 @@ namespace KingTech.Web.SimpleFileServer.Controllers
             var result = new FileStreamResult(file.File, contentType);
             
             return result;
+        }
+
+        /// <summary>
+        /// Get a list of files from the base directory.
+        /// </summary>
+        /// <returns>A list of file names.</returns>
+        [HttpGet("list")]
+        [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+        public IActionResult ListFiles() => ListFiles(null);
+
+        /// <summary>
+        /// Get a list of files from the given directory.
+        /// </summary>
+        /// <param name="directory">The directory path (from the base-directory) to list all files in.</param>
+        /// <returns>A list of file names.</returns>
+        [HttpGet("list/{directory}")]
+        [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+        public IActionResult ListFiles(string? directory)
+        {
+            //Convert url encoded string back to normal string.
+            if(!string.IsNullOrEmpty(directory))
+                directory = HttpUtility.UrlDecode(directory);
+
+            //Get list of files from all sources.
+            var files = new List<string>();
+            foreach (var source in _sources)
+            {
+                var sourceFiles = source.ListFiles(directory);
+                if(sourceFiles != null && sourceFiles.Any())
+                    files.AddRange(sourceFiles);
+            }
+
+            return Ok(files);
+        }
+
+
+        /// <summary>
+        /// Get a list of sub-directories in the base-directory.
+        /// </summary>
+        /// <returns>A list of directory names.</returns>
+        [HttpGet("directories")]
+        [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+        public IActionResult ListDirectories() => ListDirectories(null);
+
+        /// <summary>
+        /// Get a list of sub-directories in the given directory path.
+        /// </summary>
+        /// <param name="directory">the directory path to get sub-directories for based on the base-directory.</param>
+        /// <returns>A list of directory names.</returns>
+        [HttpGet("directories/{directory}")]
+        [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+        public IActionResult ListDirectories(string? directory)
+        {
+            //Convert url encoded string back to normal string.
+            if (!string.IsNullOrEmpty(directory))
+                directory = HttpUtility.UrlDecode(directory);
+
+            //Get list of (sub) directories from all sources.
+            var directories = new List<string>();
+            foreach (var source in _sources)
+            {
+                var sourceDirectories = source.ListDirectories(directory);
+                if (sourceDirectories != null && sourceDirectories.Any())
+                    directories.AddRange(sourceDirectories);
+            }
+
+            return Ok(directories);
         }
 
         /// <summary>

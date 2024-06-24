@@ -38,7 +38,10 @@ public class FileSystemFileSource : IFileSource
         _logger.LogDebug("Getting {file} from filesystem", fileName);
         try
         {
+            //Combine with base directory.
             var path = Path.Join(_settings.BaseDirectory, fileName);
+
+            //Try to open file.
             var file = File.Open(path, FileMode.Open);
             return new StoredFile(path, file);
         }
@@ -47,5 +50,27 @@ public class FileSystemFileSource : IFileSource
             _logger.LogError(e, "Unable to open file {file}", fileName);
             return null;
         }
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<string> ListFiles(string? directory)
+    {
+        //Combine with base directory.
+        var path = Path.Join(_settings.BaseDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory);
+
+        var fullFilePaths = Directory.GetFiles(path).ToList();
+        return fullFilePaths.Select(fp => Path.GetFileName(fp));
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<string> ListDirectories(string? directory)
+    {
+        //Combine with base directory.
+        var path = Path.Join(_settings.BaseDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory);
+
+        //return Directory.GetDirectories(path);
+
+        var fullDirectoryPaths = Directory.GetDirectories(path);
+        return fullDirectoryPaths.Select(fp => Path.GetFileName(fp));
     }
 }

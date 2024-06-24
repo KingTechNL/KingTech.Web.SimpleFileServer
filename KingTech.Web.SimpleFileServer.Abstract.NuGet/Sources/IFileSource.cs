@@ -17,4 +17,18 @@ public interface IFileSource
     /// <param name="fileName">The fileName to get the file from.</param>
     /// <returns>StoredFile with metadata and stream containing the requested file, null when no such file could be found.</returns>
     public StoredFile GetFile(string fileName);
+
+    /// <summary>
+    /// List all the files available to this file source.
+    /// </summary>
+    /// <param name="directory">The directory to list files in.</param>
+    /// <returns>A list of all file names in the given directory.</returns>
+    public IEnumerable<string> ListFiles(string? directory);
+
+    /// <summary>
+    /// List all the (sub) directories available to this file source.
+    /// </summary>
+    /// <param name="directory">The directory to sub-directories in.</param>
+    /// <returns>A list of all (sub) directory names in the given directory.</returns>
+    public IEnumerable<string> ListDirectories(string? directory);
 }
