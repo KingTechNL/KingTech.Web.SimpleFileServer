@@ -1,4 +1,6 @@
-﻿namespace KingTech.Web.SimpleFileServer;
+﻿using Microsoft.Extensions.Configuration;
+
+namespace KingTech.Web.SimpleFileServer;
 
 public static class WebServerExtensions
 {
@@ -37,5 +39,17 @@ public static class WebServerExtensions
                 builder.Services.AddTransient<TInterface, TImplementation>();
                 break;
         }
+    }
+
+    /// <summary>
+    /// Add Seq logging to the DI container if configured.
+    /// https://docs.datalust.co/docs/microsoft-extensions-logging
+    /// </summary>
+    /// <param name="builder">The builder to enable Seq logging for.</param>
+    public static void AddSeq(this WebApplicationBuilder builder)
+    {
+        var seqConfig = builder.Configuration.GetSection("Seq");
+        if (seqConfig?.GetValue<bool?>("Enabled") == true)
+            builder.Logging.AddSeq(seqConfig);
     }
 }

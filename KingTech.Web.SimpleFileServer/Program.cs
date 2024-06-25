@@ -4,6 +4,9 @@ using KingTech.Web.SimpleFileServer.Plugins;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Add Seq logging (if configured).
+builder.Logging.AddSeq();
+
 // Add services to the container.
 builder.Services.AddControllers();
 
