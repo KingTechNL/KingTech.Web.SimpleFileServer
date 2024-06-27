@@ -21,4 +21,5 @@ RUN dotnet publish "KingTech.Web.SimpleFileServer.csproj" -c Release -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN apk add --no-cache bash
 ENTRYPOINT ["dotnet", "KingTech.Web.SimpleFileServer.dll"]
