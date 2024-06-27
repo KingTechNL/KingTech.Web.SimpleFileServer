@@ -32,7 +32,11 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "publishAllPorts": true,
-      "useSSL": true
+      "useSSL": true,
+      "environmentVariables": {
+        //"FileSystemFileSourceSettings__BaseDirectory": "/files",
+        //"FileSystemFileSourceSettings__IsReadOnly": "true"
+      }
     }
   }
 }

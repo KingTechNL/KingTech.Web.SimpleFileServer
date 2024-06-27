@@ -17,11 +17,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Configure<GeneralSettings>();
 
-// Load transformer plugins.
+// Load transformer and file source plugins.
 var config = builder.Configuration.GetConfiguration<PluginSettings>();
 var pluginDirectories = config?.PluginDirectories;
 if (!pluginDirectories?.Any() ?? true)
-    //pluginDirectories = new List<string>() { Assembly.GetEntryAssembly().Location };
     pluginDirectories = new List<string>() { "/plugins" };
 var excludeRegexes = config?.ExcludeRegexes ?? new List<string>();
 new PluginBuilder(LoggerFactory.Create(builder =>

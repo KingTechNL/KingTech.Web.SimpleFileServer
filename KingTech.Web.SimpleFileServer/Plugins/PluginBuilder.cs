@@ -88,6 +88,8 @@ public class PluginBuilder
         //Load all assemblies.
         if (!_pluginDirectories?.Any() ?? false)
             _logger?.LogWarning("No assemblies will be added as no plugin directories have been given.");
+        _logger?.LogDebug("Loading plugins from: ", string.Join(',', _pluginDirectories));
+
         foreach (var pluginDirectory in _pluginDirectories)
         {
             var directoryAssemblies = LoadAssembliesInDirectory(services, pluginDirectory);
