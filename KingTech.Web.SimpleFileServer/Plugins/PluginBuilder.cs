@@ -88,7 +88,7 @@ public class PluginBuilder
         //Load all assemblies.
         if (!_pluginDirectories?.Any() ?? false)
             _logger?.LogWarning("No assemblies will be added as no plugin directories have been given.");
-        _logger?.LogDebug("Loading plugins from: ", string.Join(',', _pluginDirectories));
+        _logger?.LogDebug("Loading plugins from: {pluginDirectories}", string.Join(',', _pluginDirectories));
 
         foreach (var pluginDirectory in _pluginDirectories)
         {
@@ -118,12 +118,13 @@ public class PluginBuilder
                     services.AddTransient(pluginType, t);
                     _logger?.LogInformation("{type} plugin loaded", t);
                 });
+
+                _logger?.LogInformation("Plugin loading completed for {type}, {pluginAmount} implementations loaded.", pluginType.Name, pluginImplementations.Count);
             }
             catch (Exception ex)
             {
                 _logger?.LogWarning(ex, "Cannot register type: {type} from selected assemblies", pluginType);
             }
-            _logger?.LogInformation("Plugin loading completed for {type}", pluginType);
         }
 
         //Load all settings
@@ -143,7 +144,7 @@ public class PluginBuilder
             {
                 _logger?.LogWarning(ex, "Cannot register type: {type} from selected assemblies", pluginSettingsType);
             }
-            _logger?.LogInformation("Plugin settings loading completed for {type}", pluginSettingsType);
+            _logger?.LogInformation("Plugin settings loading completed for {type}", pluginSettingsType.Name);
         }
     }
 
@@ -168,7 +169,7 @@ public class PluginBuilder
             {
                 var generatedConfig = Activator.CreateInstance(settingsType);
                 services.AddSingleton(settingsType, generatedConfig);
-                _logger?.LogInformation("No settings found for {type}, generated defaults: {@Config}", settingsType, generatedConfig);
+                _logger?.LogInformation("No settings found for {type}, generated defaults: {@Config}", settingsType.Name, generatedConfig);
             }
             catch (Exception ex)
             {
