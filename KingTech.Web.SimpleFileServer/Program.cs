@@ -1,3 +1,4 @@
+using KingTech.Web.SimpleFileServer;
 using KingTech.Web.SimpleFileServer.Abstract.Sources;
 using KingTech.Web.SimpleFileServer.Abstract.Transformers;
 using KingTech.Web.SimpleFileServer.Plugins;
@@ -13,6 +14,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Configure<GeneralSettings>();
 
 // Load transformer plugins.
 var config = builder.Configuration.GetConfiguration<PluginSettings>();

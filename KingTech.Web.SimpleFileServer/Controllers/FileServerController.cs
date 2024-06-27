@@ -1,29 +1,42 @@
 using System.Collections.Immutable;
+using System.Text.Encodings.Web;
 using System.Web;
 using KingTech.Web.SimpleFileServer.Abstract.Models;
 using KingTech.Web.SimpleFileServer.Abstract.Sources;
 using KingTech.Web.SimpleFileServer.Abstract.Transformers;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace KingTech.Web.SimpleFileServer.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/")]
     public class FileServerController : ControllerBase
     {
         private const string TransformerParameterKey = "transform";
 
         private readonly ILogger<FileServerController> _logger;
+        private readonly GeneralSettings _generalSettings;
         private readonly IEnumerable<ITransformer> _transformers;
         private readonly IEnumerable<IFileSource> _sources;
 
-        public FileServerController(ILogger<FileServerController> logger, IEnumerable<ITransformer> transformers, IEnumerable<IFileSource> sources)
+        public FileServerController(ILogger<FileServerController> logger, GeneralSettings generalSettings,
+            IEnumerable<ITransformer> transformers, IEnumerable<IFileSource> sources)
         {
             _logger = logger;
+            _generalSettings = generalSettings;
             _transformers = transformers;
             _sources = sources;
         }
+
+        /// <summary>
+        /// Return a short text describing this service.
+        /// </summary>
+        /// <returns>A short text describing this service.</returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public IActionResult Index() => Ok(_generalSettings?.ServiceDescription ?? string.Empty);
 
         /// <summary>
         /// Get a specific file from the file server.
@@ -33,7 +46,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         [HttpGet("{fileName}")]
         [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Get(string fileName)
+        public IActionResult GetFile(string fileName)
         {
             //Check parameters
             if (string.IsNullOrWhiteSpace(fileName))
