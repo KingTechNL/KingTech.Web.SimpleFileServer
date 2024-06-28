@@ -37,7 +37,7 @@ WORKDIR /app
 RUN apk add --no-cache bash 
 # Add compiled & published web application
 COPY --from=publish /app/publish .
-COPY --from=publish /app/plugins .
+COPY --from=publish /app/plugins ./basicplugins/
 COPY entrypoint.sh .
 RUN mkdir -p /plugins
 RUN chmod +x entrypoint.sh
