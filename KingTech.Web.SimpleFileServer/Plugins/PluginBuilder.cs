@@ -195,7 +195,10 @@ public class PluginBuilder
 
 
         //Get all dlls
-        foreach (var fileInfo in new DirectoryInfo(assemblyDirectory).GetFiles("*.dll", SearchOption.AllDirectories))
+        var dlls = new DirectoryInfo(assemblyDirectory).GetFiles("*.dll", SearchOption.AllDirectories);
+        _logger?.LogDebug("{dllAmount} dll's found in {assemblyDir}: {dlls}", dlls.Length, assemblyDirectory, dlls.Select(dll => dll.Name));
+        _logger?.LogDebug("Excluding microsoft assemblies and files that adhere to: '{excludeRegex}'", string.Join("||", _exclusionRegexes));
+        foreach (var fileInfo in dlls)
         {
             try
             {
@@ -204,6 +207,7 @@ public class PluginBuilder
                     && !fileInfo.Name.ToLower().StartsWith("microsoft.")
                     && !Exclude(fileInfo))
                 {
+                    _logger?.LogTrace("Loading types from: {assembly}", fileInfo.Name);
                     var sharedTypes = services.Select(reg => reg.ServiceType).ToList();
                     sharedTypes.AddRange(_pluginTypes);
                     var loader = McMaster.NETCore.Plugins.PluginLoader.CreateFromAssemblyFile(fileInfo.FullName, sharedTypes.ToArray()); //get all registrations from the dicontainer and share
@@ -213,7 +217,7 @@ public class PluginBuilder
             }
             catch (Exception e)
             {
-                _logger?.LogDebug(e, "Failed to load assembly {filename}", fileInfo.Name);
+                _logger?.LogError(e, "Failed to load assembly {filename}", fileInfo.Name);
                 //ignore
             }
         }
