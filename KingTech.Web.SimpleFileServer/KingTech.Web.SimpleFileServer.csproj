@@ -15,11 +15,14 @@
     <PackageReference Include="Seq.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.6" />
+
+    <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-alpha.27"/>
   </ItemGroup>
 
-  <ItemGroup>
+	<!--
+	<ItemGroup>
     <ProjectReference Include="..\KingTech.Web.SimpleFileServer.Abstract.NuGet\KingTech.Web.SimpleFileServer.Abstract.NuGet.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
 
 	<PropertyGroup>
 		<DockerfileRunArguments>-v "C:/dev/_data/SimpleFileServer/Files:/files:rw" -v "C:/dev/_data/SimpleFileServer/Plugins/:/plugins:rw"</DockerfileRunArguments>

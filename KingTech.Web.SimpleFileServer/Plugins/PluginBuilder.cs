@@ -206,7 +206,7 @@ public class PluginBuilder
                     && !fileInfo.Name.ToLower().StartsWith("microsoft.")
                     && !Exclude(fileInfo))
                 {
-                    _logger?.LogTrace("Loading types from: {assembly}", fileInfo.Name);
+                    _logger?.LogTrace("Loading types from: {assembly}", fileInfo.FullName);
                     var sharedTypes = services.Select(reg => reg.ServiceType).ToList();
                     sharedTypes.AddRange(_pluginTypes);
                     var loader = McMaster.NETCore.Plugins.PluginLoader.CreateFromAssemblyFile(fileInfo.FullName, sharedTypes.ToArray(), options => options.IsLazyLoaded = true); //get all registrations from the dicontainer and share
