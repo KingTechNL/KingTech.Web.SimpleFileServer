@@ -15,26 +15,33 @@ RUN dotnet restore "KingTech.Web.SimpleFileServer/KingTech.Web.SimpleFileServer.
 RUN dotnet restore "KingTech.Web.SimpleFileServer.BasicPlugins/KingTech.Web.SimpleFileServer.BasicPlugins.csproj"
 COPY  ["KingTech.Web.SimpleFileServer/", "KingTech.Web.SimpleFileServer/"]
 COPY  ["KingTech.Web.SimpleFileServer.Abstract.NuGet/", "KingTech.Web.SimpleFileServer.Abstract.NuGet/"]
+
 # Build shared interfaces
 WORKDIR "/src/KingTech.Web.SimpleFileServer.Abstract.NuGet"
 RUN dotnet build "KingTech.Web.SimpleFileServer.Abstract.NuGet.csproj" -c Release -o /app/build
+
 # Build basic plugins
 WORKDIR "/src/KingTech.Web.SimpleFileServer.BasicPlugins"
 RUN dotnet build "KingTech.Web.SimpleFileServer.BasicPlugins.csproj" -c Release -o /app/plugins
+
 # Build main webservice
 WORKDIR "/src/KingTech.Web.SimpleFileServer"
 RUN dotnet build "KingTech.Web.SimpleFileServer.csproj" -c Release -o /app/build
 
-# Pusblish webservice
+# Publish webservice
 FROM build AS publish
 RUN dotnet publish "KingTech.Web.SimpleFileServer.csproj" -c Release -o /app/publish
 
 
-# The final docker image
+
+# The docker image that will be released
 FROM base AS final
 WORKDIR /app
-# Adding bash for easy debugging of docker container.
-RUN apk add --no-cache bash 
+
+# Adding bash and curl for easy debugging of docker container.
+RUN apk add --no-cache bash
+RUN apk --no-cache add curl icu-libs libcap
+
 # Add compiled & published web application
 COPY --from=publish /app/publish .
 COPY --from=publish /app/plugins ./basicplugins/
@@ -42,5 +49,15 @@ COPY entrypoint.sh .
 RUN mkdir -p /plugins
 RUN chmod +x entrypoint.sh
 RUN dos2unix entrypoint.sh
+
+#do not run as root (but allow ports below 1024)
+RUN setcap 'cap_net_bind_service=+ep' /app/Thive.Tone.HanedaOperator.Service.dll
+RUN addgroup --system appgroup && adduser --ingroup appgroup --system appuser && chown -R appuser /app /tmp /usr/share /plugins
+USER appuser
+
+# Set dotnet environment to production
+ENV ASPNETCORE_ENVIRONMENT Production
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["dotnet", "KingTech.Web.SimpleFileServer.dll"]
