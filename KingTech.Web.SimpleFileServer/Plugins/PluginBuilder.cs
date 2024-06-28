@@ -210,9 +210,7 @@ public class PluginBuilder
                     var sharedTypes = services.Select(reg => reg.ServiceType).ToList();
                     sharedTypes.AddRange(_pluginTypes);
                     var loader = McMaster.NETCore.Plugins.PluginLoader.CreateFromAssemblyFile(fileInfo.FullName, sharedTypes.ToArray(), options => options.IsLazyLoaded = true); //get all registrations from the dicontainer and share
-                    var loadedTypes = loader.LoadDefaultAssembly().GetTypes();
-                    _logger?.LogTrace("Loaded the following types from {assembly}: {loadedTypes}", fileInfo.Name, string.Join(',', loadedTypes.Select(lt => lt.Name)));
-                    if (loadedTypes.Any()) //get the types (if none, don't use it. Will also check if all types dependencies check out)
+                    if (loader.LoadDefaultAssembly().GetTypes().Any()) //get the types (if none, don't use it. Will also check if all types dependencies check out)
                         retAssemblies.Add(loader.LoadDefaultAssembly());
                 }
             }

@@ -1,12 +1,24 @@
 version: "3.9"
 services:            
     fileserver:
-        image: "kingtechnl/simplefileserver:0.1.41"
-        ports:
-          - "8045:80"
-          - "8443:443"
-        volumes:
-          - "/mnt/c/dev/_data/SimpleFileServer/Files:/files:rw"
-          - "/mnt/c/dev/_data/SimpleFileServer/Plugins/:/plugins:rw"
-        environment:
-          ENABLE_SWAGGER: "true"
+      hostname: simplefileserver
+      image: kingtechnl/simplefileserver:alpha
+      ports:
+        - 8003:8080
+        - 8004:443
+      volumes:
+        - ./Files:/files
+        - ./Plugins/:/plugins
+      environment:
+        - Logging__LogLevel__Default=Debug
+        - ENABLE_SWAGGER=true
+        - PluginSettings__PluginDirectories=/plugins
+        - FileSystemFileSourceSettings__BaseDirectory=/files
+        - FileSystemFileSourceSettings__IsReadOnly=true
+        - ImageResizeTransformerSettings__ThumbnailWidth=100
+        - ImageResizeTransformerSettings__ThumbnailHeight=100
+        - ImageResizeTransformerSettings__KeepThumbnailAspectRatio=true
+        - Seq__Enabled=true
+        - Seq__ServerUrl=host.docker.internal:5341
+      networks:
+        - betasite

@@ -14,6 +14,11 @@ Additionally the project can be run as executable (.exe for windows, .dll for li
 
 
 # Usage
+The SimpleFileServer consists of 3 parts:
+	- The main service, loading several plugins and exposing files over an HTTP(S) connection.
+	- The file source plugins, enabling the main service to expose files from different locations (e.g. the file system, an sFTP server or cloud service like onedrive).
+	- The transformer plugins, allowing server-side transformations to be applied to the retrieved files (e.g. image resizing).
+When setting the `ENABLE_SWAGGER=true` environment variable, a swagger interface will be exposed on `[host]/swagger`. This interface represents an interactive OpenAPI documentation of the different endpoints available on the SimpleFileServer.
 
 ## File Sources
 File sources are used to fetch files from different locations, e.g. the filesystem, an sFTP server or cloud service like onedrive. 
@@ -28,7 +33,7 @@ Transformers that match this parameter will automatically be triggered, multiple
 Additional query parameters are passed to all transformers such that they may act upon them. 
 For example: When using the `transform=resize` parameter to trigger the ImageResizeTransformer, an additional `width` and `height` parameter can be passed.
 
-> https://localhost:32772/FileServer/myimage.png?transform=resize&width=150
+> https://localhost:32772/myimage.png?transform=resize&width=150
 
 ## Basic plugins
 The SimpleFileServer comes with the following preinstalled default plugins:
