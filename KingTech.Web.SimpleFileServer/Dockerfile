@@ -24,24 +24,8 @@ RUN dotnet publish "KingTech.Web.SimpleFileServer.csproj" -c Release -o /app/pub
 # The final docker image
 FROM base AS final
 WORKDIR /app
-
-# Set the user and group IDs of the host user
-ARG USER_ID
-ARG GROUP_ID
-
 # Adding bash for easy debugging of docker container.
 RUN apk add --no-cache bash 
-
-# Create a new user inside the container with the same IDs as the host user
-RUN addgroup --gid $GROUP_ID myuser && \
-adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID myuser
-
-# Give ownership of the working directory to the new user
-RUN chown myuser:myuser /app
-
-# Switch to the newly created user
-USER myuser
-
 # Add compiled & published web application
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "KingTech.Web.SimpleFileServer.dll"]
