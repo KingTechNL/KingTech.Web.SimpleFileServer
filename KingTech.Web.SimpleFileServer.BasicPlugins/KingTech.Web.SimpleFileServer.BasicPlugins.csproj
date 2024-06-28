@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -11,14 +11,19 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\KingTech.Web.SimpleFileServer.Abstract.NuGet\KingTech.Web.SimpleFileServer.Abstract.NuGet.csproj">
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+	  <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-alpha.27">
 		<ExcludeAssets>runtime</ExcludeAssets>
-    </ProjectReference>
+	  </PackageReference>
   </ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+	  <ProjectReference Include="..\KingTech.Web.SimpleFileServer.Abstract.NuGet\KingTech.Web.SimpleFileServer.Abstract.NuGet.csproj"/>
+  </ItemGroup>
+  
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'=='Debug'">
 		<ItemGroup>
 			<MySourceFiles Include="$(TargetDir)\**\*.*" Exclude="$(TargetDir)\ref\*.*" />
 			<Runtimes Include="$(TargetDir)runtimes\**\*.*" Exclude="$(TargetDir)\ref\*.*" />
