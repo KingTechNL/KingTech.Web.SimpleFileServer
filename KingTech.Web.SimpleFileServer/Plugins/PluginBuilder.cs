@@ -18,7 +18,6 @@ public class PluginBuilder
     /// The PluginBuilder is used by the main application to load in all plugins.
     /// </summary>
     /// <param name="logger">Logger for logging plugin loader progress.</param>
-    /// <param name="builder">The WebApplicationBuilder to register plugins and configurations to.</param>
     public PluginBuilder(ILogger<PluginBuilder> logger)
     {
         _logger = logger;
@@ -210,7 +209,7 @@ public class PluginBuilder
                     _logger?.LogTrace("Loading types from: {assembly}", fileInfo.Name);
                     var sharedTypes = services.Select(reg => reg.ServiceType).ToList();
                     sharedTypes.AddRange(_pluginTypes);
-                    var loader = McMaster.NETCore.Plugins.PluginLoader.CreateFromAssemblyFile(fileInfo.FullName, sharedTypes.ToArray()); //get all registrations from the dicontainer and share
+                    var loader = McMaster.NETCore.Plugins.PluginLoader.CreateFromAssemblyFile(fileInfo.FullName, sharedTypes.ToArray(), options => options.IsLazyLoaded = true); //get all registrations from the dicontainer and share
                     if (loader.LoadDefaultAssembly().GetTypes().Any()) //get the types (if none, don't use it. Will also check if all types dependencies check out)
                         retAssemblies.Add(loader.LoadDefaultAssembly());
                 }
