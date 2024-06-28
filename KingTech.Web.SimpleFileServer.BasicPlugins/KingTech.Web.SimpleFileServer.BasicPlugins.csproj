@@ -12,7 +12,7 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
   </ItemGroup>
   <ItemGroup>
-	  <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-alpha.27">
+	  <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-alpha.34">
 		<ExcludeAssets>runtime</ExcludeAssets>
 	  </PackageReference>
   </ItemGroup>
