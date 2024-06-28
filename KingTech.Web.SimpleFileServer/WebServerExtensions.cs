@@ -52,4 +52,17 @@ public static class WebServerExtensions
         if (seqConfig?.GetValue<bool?>("Enabled") == true)
             builder.Logging.AddSeq(seqConfig);
     }
+
+    /// <summary>
+    /// Get the configured microsoft loglevel.
+    /// </summary>
+    /// <param name="config">The configuration manager to get the loglevel from.</param>
+    /// <param name="category">The category to get the loglevel for (default = 'Default').</param>
+    /// <param name="defaultLevel">The default level, if no level is set (default = Information).</param>
+    /// <returns></returns>
+    public static LogLevel GetLogLevel(this ConfigurationManager config, string category = "Default", LogLevel defaultLevel = LogLevel.Information)
+    {
+        var logLevel = config.GetValue<string>($"Logging:LogLevel:{category}");
+        return Enum.TryParse<LogLevel>(logLevel, out var ll) ? ll : defaultLevel;
+    }
 }

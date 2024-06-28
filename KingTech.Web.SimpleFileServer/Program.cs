@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Add Seq logging (if configured).
 builder.Logging.AddSeq();
+var logLevel = builder.Configuration.GetLogLevel();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -24,9 +25,10 @@ if (!pluginDirectories?.Any() ?? true)
     pluginDirectories = new List<string>() { "/plugins" };
 var excludeRegexes = config?.ExcludeRegexes ?? new List<string>();
 new PluginBuilder(LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole();
-        }).CreateLogger<PluginBuilder>())
+    {
+        builder.AddConsole();
+        builder.SetMinimumLevel(logLevel);
+    }).CreateLogger<PluginBuilder>())
     .AddPluginDirectory(pluginDirectories.ToArray())
     .AddExclusionRegex(excludeRegexes.ToArray())
     .AddPluginType<ITransformer>()
