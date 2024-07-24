@@ -36,6 +36,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// <returns>A short text describing this service.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult Index() => Ok(_generalSettings?.ServiceDescription ?? string.Empty);
 
         /// <summary>
