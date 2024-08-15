@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KingTech.Web.SimpleFileServer.OneDrivePlugin", "KingTech.Web.SimpleFileServer.OneDrivePlugin\KingTech.Web.SimpleFileServer.OneDrivePlugin.csproj", "{9A0062D0-2DDC-4CD3-B708-A8AAC9FC18FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{CA2659A1-9B93-4E5F-B351-628079A612EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA2659A1-9B93-4E5F-B351-628079A612EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA2659A1-9B93-4E5F-B351-628079A612EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A0062D0-2DDC-4CD3-B708-A8AAC9FC18FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A0062D0-2DDC-4CD3-B708-A8AAC9FC18FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A0062D0-2DDC-4CD3-B708-A8AAC9FC18FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A0062D0-2DDC-4CD3-B708-A8AAC9FC18FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

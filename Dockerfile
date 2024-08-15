@@ -1,6 +1,5 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
-RUN apk --no-cache add curl icu-libs libcap
-RUN apk --no-cache add bash
+RUN apk --no-cache add curl icu-libs libcap bash
 
 WORKDIR /app
 COPY KingTech.Web.SimpleFileServer/bin/Release/net8.0 .

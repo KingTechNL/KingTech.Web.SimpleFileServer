@@ -78,9 +78,8 @@ namespace KingTech.Web.SimpleFileServer.Controllers
             }
 
             file.File.Position = 0; //Some transformers might leave position somewhere else. TODO: Does this need to be in the transform loop?
-            var result = new FileStreamResult(file.File, contentType);
-            
-            return result;
+
+            return new FileStreamResult(file.File, contentType); //TODO: Return clear error status codes on exceptions.
         }
 
         /// <summary>
@@ -113,7 +112,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
                     files.AddRange(sourceFiles);
             }
 
-            return Ok(files);
+            return Ok(files); //TODO: Return clear error status codes on exceptions.
         }
 
 
@@ -147,7 +146,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
                     directories.AddRange(sourceDirectories);
             }
 
-            return Ok(directories);
+            return Ok(directories); //TODO: Return clear error status codes on exceptions.
         }
 
         /// <summary>

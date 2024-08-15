@@ -31,9 +31,9 @@ public class FileSystemFileSource : IFileSource
     /// Load a file from the file system.
     /// See also <seealso cref="IFileSource"/>
     /// </summary>
-    /// <param name="fileName">The fileName to load the files from.</param>
+    /// <param name="fileName">The name of the file to load.</param>
     /// <returns>Stream containing the loaded file, null if no such file was found.</returns>
-    public StoredFile GetFile(string fileName)
+    public Task<StoredFile> GetFile(string fileName)
     {
         _logger.LogDebug("Getting {file} from filesystem", fileName);
         try
@@ -43,27 +43,27 @@ public class FileSystemFileSource : IFileSource
 
             //Try to open file.
             var file = File.Open(path, FileMode.Open);
-            return new StoredFile(path, file);
+            return Task.FromResult(new StoredFile(path, file));
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Unable to open file {file}", fileName);
-            return null;
+            return Task.FromResult<StoredFile>(null);
         }
     }
 
     /// <inheritdoc/>
-    public IEnumerable<string> ListFiles(string? directory)
+    public Task<IEnumerable<string>> ListFiles(string? directory)
     {
         //Combine with base directory.
         var path = Path.Join(_settings.BaseDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory);
 
         var fullFilePaths = Directory.GetFiles(path).ToList();
-        return fullFilePaths.Select(fp => Path.GetFileName(fp));
+        return Task.FromResult(fullFilePaths.Select(fp => Path.GetFileName(fp)));
     }
 
     /// <inheritdoc/>
-    public IEnumerable<string> ListDirectories(string? directory)
+    public Task<IEnumerable<string>> ListDirectories(string? directory)
     {
         //Combine with base directory.
         var path = Path.Join(_settings.BaseDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory);
@@ -71,6 +71,6 @@ public class FileSystemFileSource : IFileSource
         //return Directory.GetDirectories(path);
 
         var fullDirectoryPaths = Directory.GetDirectories(path);
-        return fullDirectoryPaths.Select(fp => Path.GetFileName(fp));
+        return Task.FromResult(fullDirectoryPaths.Select(fp => Path.GetFileName(fp)));
     }
 }
