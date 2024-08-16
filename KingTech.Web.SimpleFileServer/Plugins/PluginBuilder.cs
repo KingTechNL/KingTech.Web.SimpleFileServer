@@ -96,6 +96,13 @@ public class PluginBuilder
             _logger?.LogInformation("{assemblyAmount} assemblies loaded from {pluginDirectory}.", directoryAssemblies?.Count() ?? 0, pluginDirectory);
         }
 
+        //Check if there are any assemblies in the plugin directories.
+        if (!assemblies.Any())
+        {
+            _logger?.LogError("No assemblies found in plugin directories ({directories}). Without plugins, this application wont function properly.", string.Join(",", _pluginDirectories));
+            return;
+        }
+
         //Register all plugins.
         if (!_pluginTypes?.Any() ?? false)
             _logger?.LogWarning("No plugins will be registered as no plugin types have been given.");

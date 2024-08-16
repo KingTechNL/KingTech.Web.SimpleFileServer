@@ -26,12 +26,9 @@
 			<MySourceFiles Include="$(TargetDir)\**\*.*" Exclude="$(TargetDir)\ref\*.*" />
 			<Runtimes Include="$(TargetDir)runtimes\**\*.*" Exclude="$(TargetDir)\ref\*.*" />
 		</ItemGroup>
-		<!--
-		<Copy SourceFiles="@(MySourceFiles)" DestinationFiles="@(MySourceFiles->'..\KingTech.Web.SimpleFileServer\$(OutDir)Plugins\BasicPlugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
-		<Copy SourceFiles="@(Runtimes)" DestinationFiles="@(Runtimes->'..\KingTech.Web.SimpleFileServer\$(OutDir)Plugins\BasicPlugins\runtimes\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
-		-->
-		<Copy SourceFiles="@(MySourceFiles)" DestinationFiles="@(MySourceFiles->'C:\dev\_data\SimpleFileServer\Plugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
-		<Copy SourceFiles="@(Runtimes)" DestinationFiles="@(Runtimes->'C:\dev\_data\SimpleFileServer\Plugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
+
+		<Copy SourceFiles="@(MySourceFiles)" DestinationFiles="@(MySourceFiles->'..\KingTech.Web.SimpleFileServer\$(OutDir)plugins\BasicPlugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
+		<Copy SourceFiles="@(Runtimes)" DestinationFiles="@(Runtimes->'..\KingTech.Web.SimpleFileServer\$(OutDir)plugins\BasicPlugins\runtimes\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="false" OverwriteReadOnlyFiles="true" />
 	</Target>
 
 </Project>

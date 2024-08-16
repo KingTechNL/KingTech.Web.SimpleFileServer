@@ -58,6 +58,11 @@ public class OneDriveFileSource : IFileSource
     {
         var itemId = GetDriveItemId(fileName);
         var result = await graphClient.Drives[_settings.DriveId].Items[fileName].Content.GetAsync();
+
+        if (result == null)
+            return null;
+
+        return new StoredFile(fileName, result);
     }
 
     /// <inheritdoc/>
