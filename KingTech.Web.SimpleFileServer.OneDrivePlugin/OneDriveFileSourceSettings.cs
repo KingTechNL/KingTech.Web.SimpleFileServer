@@ -14,7 +14,7 @@ public class OneDriveFileSourceSettings : IFileSourceSettings
     /// <summary>
     /// The OneDrive Drive ID to get the files from.
     /// </summary>
-    /// <remarks>Default drive ID 'me' refers to personal onedrive.</remarks>
+    /// <remarks>Default drive ID 'me' refers to a personal onedrive.</remarks>
     public string DriveId { get; set; } = "me";
 
     /// <summary>
@@ -25,8 +25,8 @@ public class OneDriveFileSourceSettings : IFileSourceSettings
     /// <summary>
     /// The Tenant the Client is part of.
     /// </summary>
-    /// <remarks>Default tenant ID 'personal' refers to personal onedrive.</remarks>
-    public string TenantId { get; set; } = "Personal";
+    /// <remarks>Default tenant ID 'common' refers to a personal onedrive.</remarks>
+    public string TenantId { get; set; } = "common";
     /// <summary>
     /// The Secret (auth token) that will be used for authentication.
     /// </summary>

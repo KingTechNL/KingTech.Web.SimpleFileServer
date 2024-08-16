@@ -27,7 +27,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
             _logger = logger;
             _generalSettings = generalSettings;
             _transformers = transformers;
-            _sources = sources;
+            _sources = sources.Where(s => s.Enabled);
         }
 
         /// <summary>

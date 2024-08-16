@@ -17,7 +17,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.6" />
 
-    <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-onedrive-source.43"/>
+    <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-onedrive-source.44"/>
   </ItemGroup>
 
 	<!--	
