@@ -7,6 +7,11 @@
 public interface IFileSourceSettings
 {
     /// <summary>
+    /// Whether or not to enable the plugin these settings are meant for.
+    /// </summary>
+    public bool Enabled { get; set; }
+
+    /// <summary>
     /// Whether or not files can be uploaded to this source.
     /// </summary>
     public bool IsReadOnly { get; set; }

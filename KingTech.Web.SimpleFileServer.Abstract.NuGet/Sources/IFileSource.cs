@@ -8,6 +8,10 @@ namespace KingTech.Web.SimpleFileServer.Abstract.Sources;
 public interface IFileSource
 {
     /// <summary>
+    /// Whether or not to enable the plugin these settings are meant for.
+    /// </summary>
+    public bool Enabled { get; }
+    /// <summary>
     /// The unique name of this file source. Used to determine whether the source should be loaded / used or not.
     /// </summary>
     public string Name { get; }

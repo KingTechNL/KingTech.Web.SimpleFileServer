@@ -47,7 +47,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         [HttpGet("{fileName}")]
         [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetFile(string fileName)
+        public async Task<IActionResult> GetFile(string fileName)
         {
             //Check parameters
             if (string.IsNullOrWhiteSpace(fileName))
@@ -55,7 +55,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
 
             //Get file from source.
             fileName = HttpUtility.UrlDecode(fileName);
-            var file = LoadFromSource(fileName);
+            var file = await LoadFromSource(fileName);
             
             if (file == null)
             {
@@ -88,7 +88,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// <returns>A list of file names.</returns>
         [HttpGet("list")]
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-        public IActionResult ListFiles() => ListFiles(null);
+        public async Task<IActionResult> ListFiles() => await ListFiles(null);
 
         /// <summary>
         /// Get a list of files from the given directory.
@@ -97,7 +97,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// <returns>A list of file names.</returns>
         [HttpGet("list/{directory}")]
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-        public IActionResult ListFiles(string? directory)
+        public async Task<IActionResult> ListFiles(string? directory)
         {
             //Convert url encoded string back to normal string.
             if(!string.IsNullOrEmpty(directory))
@@ -107,7 +107,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
             var files = new List<string>();
             foreach (var source in _sources)
             {
-                var sourceFiles = source.ListFiles(directory);
+                var sourceFiles = await source.ListFiles(directory);
                 if(sourceFiles != null && sourceFiles.Any())
                     files.AddRange(sourceFiles);
             }
@@ -122,7 +122,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// <returns>A list of directory names.</returns>
         [HttpGet("directories")]
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-        public IActionResult ListDirectories() => ListDirectories(null);
+        public async Task<IActionResult> ListDirectories() => await ListDirectories(null);
 
         /// <summary>
         /// Get a list of sub-directories in the given directory path.
@@ -131,7 +131,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// <returns>A list of directory names.</returns>
         [HttpGet("directories/{directory}")]
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-        public IActionResult ListDirectories(string? directory)
+        public async Task<IActionResult> ListDirectories(string? directory)
         {
             //Convert url encoded string back to normal string.
             if (!string.IsNullOrEmpty(directory))
@@ -141,7 +141,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
             var directories = new List<string>();
             foreach (var source in _sources)
             {
-                var sourceDirectories = source.ListDirectories(directory);
+                var sourceDirectories = await source.ListDirectories(directory);
                 if (sourceDirectories != null && sourceDirectories.Any())
                     directories.AddRange(sourceDirectories);
             }
@@ -154,12 +154,12 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// </summary>
         /// <param name="fileName">Filename (minus the postfix for transformers).</param>
         /// <returns>The loaded file including metadata, or null if no such file was found.</returns>
-        private StoredFile LoadFromSource(string fileName)
+        private async Task<StoredFile> LoadFromSource(string fileName)
         {
             StoredFile file = null;
             foreach (var source in _sources)
             {
-                file = source.GetFile(fileName);
+                file = await source.GetFile(fileName);
                 if (file != null)
                     break;
             }

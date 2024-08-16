@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.Graph" Version="5.56.0" />
     <PackageReference Include="Microsoft.Graph.Core" Version="3.1.15" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-alpha.34">
+    <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-onedrive-source.42">
 	    <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
   </ItemGroup>

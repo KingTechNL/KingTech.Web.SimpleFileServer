@@ -20,6 +20,8 @@ public class OneDriveFileSource : IFileSource
     private readonly OneDriveFileSourceSettings _settings;
 
     /// <inheritdoc cref="IFileSource"/>
+    public bool Enabled => _settings?.Enabled ?? false;
+    /// <inheritdoc cref="IFileSource"/>
     public string Name => "OneDrive";
 
     /// <summary>

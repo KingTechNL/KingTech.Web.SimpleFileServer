@@ -8,6 +8,9 @@ namespace KingTech.Web.SimpleFileServer.BasicPlugins.Sources;
 public class FileSystemFileSourceSettings : IFileSourceSettings
 {
     /// <inheritdoc/>
+    public bool Enabled { get; set; } = false;
+
+    /// <inheritdoc/>
     public bool IsReadOnly { get; set; }
 
     /// <summary>

@@ -7,6 +7,8 @@ public class OneDriveFileSourceSettings : IFileSourceSettings
     public static string[] Scopes = { "https://graph.microsoft.com/.default" };
 
     /// <inheritdoc/>
+    public bool Enabled { get; set; } = false;
+    /// <inheritdoc/>
     public bool IsReadOnly { get; set; } = true;
 
     /// <summary>

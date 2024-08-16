@@ -13,6 +13,9 @@ public class FileSystemFileSource : IFileSource
     /// <inheritdoc cref="IFileSource"/>
     public string Name => "FileSystem";
 
+    /// <inheritdoc cref="IFileSource"/>
+    public bool Enabled => _settings?.Enabled ?? false;
+
     private readonly ILogger<FileSystemFileSource> _logger;
     private readonly FileSystemFileSourceSettings _settings;
 
