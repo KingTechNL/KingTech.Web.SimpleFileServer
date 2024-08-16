@@ -12,7 +12,7 @@
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
   </ItemGroup>
   <ItemGroup>
-	  <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-onedrive-source.42">
+	  <PackageReference Include="KingTech.Web.SimpleFileServer.Abstract" Version="0.1.0-onedrive-source.43">
 		<ExcludeAssets>runtime</ExcludeAssets>
 	  </PackageReference>
   </ItemGroup>
