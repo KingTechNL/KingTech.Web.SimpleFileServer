@@ -43,6 +43,7 @@ FileSource plugin that uses the standard filesystem to access files.
 
 | Setting | Default | Description |
 | -- | -- | -- |
+| Enabled | false | Whether or not this file source should be enabled. |
 | BaseDirectory | "/files" | The base directory files are stored. Note that when deploying as docker, this points to a directory in the docker container. |
 | IsReadOnly | false | Whether or not the source can be written to (e.g. files can be uploaded). |
 
@@ -68,3 +69,19 @@ Additionally, the 'transform=thumb' query parameter can be passed. This automati
 | ThumbnailWidth | 100 | The width of the resulting image. |
 | ThumbnailHeight | 100 | The height of the resulting image. |
 | KeepThumbnailAspectRatio | true | Whether or not to keep the image aspect ration intact. |
+
+## OneDrive plugins
+There is an experimental OneDrive plugin available for the SimpleFileServer.
+This plugin allows SimpleFileServer to use OneDrive as a file source. In order for the SimpleFileServer to access a OneDrive drive, a new App Registration needs to be made on portal.azure.com.
+
+Due to limitations in the Microsoft Graph API, it seems like this only works for 'onedrive for business' licenses. 
+All attempts on getting access to a personal onedrive have failed.
+
+| Setting | Default | Description |
+| -- | -- | -- |
+| Enabled | false | Whether or not this file source should be enabled. |
+| UseItemId | true | Whether to use the OneDrive Item ID's, or the file/folder names. Note that using the file/folder names may cause a loss of performance. |
+| DriveId | "me" | The DriveID to use. Default Drive ID 'me' refers to the clients personal drive. |
+| ClientSecretCredentials.ClientId | "" | The ID of the Client (app registration) that will be used for authentication. |
+| ClientSecretCredentials.TenantId | "" | The Tenant the drive is part of. |
+| ClientSecretCredentials.ClientSecret | "" | The Secret that will be used for authentication. |
