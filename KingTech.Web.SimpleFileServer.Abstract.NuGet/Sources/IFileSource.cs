@@ -12,6 +12,10 @@ public interface IFileSource
     /// </summary>
     public bool Enabled { get; }
     /// <summary>
+    /// Whether or not files can be uploaded to this source.
+    /// </summary>
+    public bool IsReadOnly { get; }
+    /// <summary>
     /// The unique name of this file source. Used to determine whether the source should be loaded / used or not.
     /// </summary>
     public string Name { get; }

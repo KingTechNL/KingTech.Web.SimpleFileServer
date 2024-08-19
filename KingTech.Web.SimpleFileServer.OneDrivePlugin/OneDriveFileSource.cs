@@ -9,16 +9,10 @@ namespace KingTech.Web.SimpleFileServer.OneDrivePlugin;
 /// File source to get files from Microsoft OneDrive.
 /// See also: <seealso cref="IFileSource"/>
 /// </summary>
-public class OneDriveFileSource : IFileSource
+public class OneDriveFileSource : FileSourceBase<OneDriveFileSourceSettings>
 {
     private readonly ILogger<OneDriveFileSource> _logger;
-    private readonly OneDriveFileSourceSettings _settings;
-
-    /// <inheritdoc cref="IFileSource"/>
-    public bool Enabled => _settings?.Enabled ?? false;
-    /// <inheritdoc cref="IFileSource"/>
-    public string Name => "OneDrive";
-
+    
     /// <summary>
     /// Client handling communication with OneDrive.
     /// </summary>
@@ -29,10 +23,9 @@ public class OneDriveFileSource : IFileSource
     /// </summary>
     /// <param name="loggerFactory"></param>
     /// <param name="settings"></param>
-    public OneDriveFileSource(ILoggerFactory loggerFactory, OneDriveFileSourceSettings settings)
+    public OneDriveFileSource(ILoggerFactory loggerFactory, OneDriveFileSourceSettings settings) : base(settings)
     {
         _logger = loggerFactory.CreateLogger<OneDriveFileSource>();
-        _settings = settings;
 
         //Dont start a connection if this plugin is disabled.
         if (!settings.Enabled)
@@ -57,21 +50,21 @@ public class OneDriveFileSource : IFileSource
     /// </summary>
     /// <param name="fileName">The name of the file to load.</param>
     /// <returns>Stream containing the loaded file, null if no such file was found.</returns>
-    public async Task<StoredFile> GetFile(string fileName)
+    public override async Task<StoredFile> GetFile(string fileName)
     {
         var result = await _client.GetFileStream(fileName);
         return new StoredFile(fileName, result);
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<string>> ListFiles(string? directory)
+    public override async Task<IEnumerable<string>> ListFiles(string? directory)
     {
         var files = await _client.ListFiles(directory);
         return files?.Select(f => f.Name);
     }
 
     /// <inheritdoc/>
-    public async Task<IEnumerable<string>> ListDirectories(string? directory)
+    public override async Task<IEnumerable<string>> ListDirectories(string? directory)
     {
         var folders = await _client.ListDirectories(directory);
         return folders?.Select(f => f.Name);

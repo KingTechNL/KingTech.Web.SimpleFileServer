@@ -9,6 +9,9 @@ public class OneDriveFileSourceSettings : IFileSourceSettings
     /// <inheritdoc/>
     public bool IsReadOnly { get; set; } = true;
 
+    /// <inheritdoc/>
+    public string Name { get; set; }
+
     /// <summary>
     /// If set to true, the OneDriveFileSource will assume you are passing Microsoft Graph API Item ID's as file or directory names.
     /// If set to false, the OneDriveFileSource will try to convert the given file/directory names itself but this will come with some overhead.

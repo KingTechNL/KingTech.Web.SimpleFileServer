@@ -13,6 +13,9 @@ public class FileSystemFileSourceSettings : IFileSourceSettings
     /// <inheritdoc/>
     public bool IsReadOnly { get; set; }
 
+    /// <inheritdoc/>
+    public string Name { get; set; }
+
     /// <summary>
     /// The base directory files are stored.
     /// </summary>

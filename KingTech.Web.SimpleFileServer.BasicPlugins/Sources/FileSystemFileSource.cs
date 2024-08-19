@@ -8,26 +8,18 @@ namespace KingTech.Web.SimpleFileServer.BasicPlugins.Sources;
 /// File source to get files from the file system.
 /// See also: <seealso cref="IFileSource"/>
 /// </summary>
-public class FileSystemFileSource : IFileSource
+public class FileSystemFileSource : FileSourceBase<FileSystemFileSourceSettings>
 {
-    /// <inheritdoc cref="IFileSource"/>
-    public string Name => "FileSystem";
-
-    /// <inheritdoc cref="IFileSource"/>
-    public bool Enabled => _settings?.Enabled ?? false;
-
     private readonly ILogger<FileSystemFileSource> _logger;
-    private readonly FileSystemFileSourceSettings _settings;
 
     /// <summary>
     /// File source to get files from the file system.
     /// </summary>
     /// <param name="logger">Logger to log errors to. See also: <seealso cref="ILogger{TCategoryName}"/></param>
     /// <param name="settings">Settings for the file system logging. See also: <seealso cref="IFileSourceSettings"/></param>
-    public FileSystemFileSource(ILogger<FileSystemFileSource> logger, FileSystemFileSourceSettings settings)
+    public FileSystemFileSource(ILogger<FileSystemFileSource> logger, FileSystemFileSourceSettings settings) : base(settings)
     {
         _logger = logger;
-        _settings = settings;
     }
 
     /// <summary>
@@ -36,13 +28,13 @@ public class FileSystemFileSource : IFileSource
     /// </summary>
     /// <param name="fileName">The name of the file to load.</param>
     /// <returns>Stream containing the loaded file, null if no such file was found.</returns>
-    public Task<StoredFile> GetFile(string fileName)
+    public override Task<StoredFile> GetFile(string fileName)
     {
         _logger.LogDebug("Getting {file} from filesystem", fileName);
         try
         {
             //Combine with base directory.
-            var path = Path.Join(_settings.BaseDirectory, fileName);
+            var path = Path.Join(Settings.BaseDirectory, fileName);
 
             //Try to open file.
             var file = File.Open(path, FileMode.Open);
@@ -56,20 +48,20 @@ public class FileSystemFileSource : IFileSource
     }
 
     /// <inheritdoc/>
-    public Task<IEnumerable<string>> ListFiles(string? directory)
+    public override Task<IEnumerable<string>> ListFiles(string? directory)
     {
         //Combine with base directory.
-        var path = Path.Join(_settings.BaseDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory);
+        var path = Path.Join(Settings.BaseDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory);
 
         var fullFilePaths = Directory.GetFiles(path).ToList();
         return Task.FromResult(fullFilePaths.Select(fp => Path.GetFileName(fp)));
     }
 
     /// <inheritdoc/>
-    public Task<IEnumerable<string>> ListDirectories(string? directory)
+    public override Task<IEnumerable<string>> ListDirectories(string? directory)
     {
         //Combine with base directory.
-        var path = Path.Join(_settings.BaseDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory);
+        var path = Path.Join(Settings.BaseDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory);
 
         //return Directory.GetDirectories(path);
 

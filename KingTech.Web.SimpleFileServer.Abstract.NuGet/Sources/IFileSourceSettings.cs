@@ -15,6 +15,11 @@ public interface IFileSourceSettings
     /// Whether or not files can be uploaded to this source.
     /// </summary>
     public bool IsReadOnly { get; set; }
+    /// <summary>
+    /// The unique name for the plugin these settings are meant for.
+    /// </summary>
+    /// <remarks>Each plugin should have a default value for this setting.</remarks>
+    public string Name { get; set; }
 
     /// <summary>
     /// Method used to verify settings.
