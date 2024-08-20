@@ -12,16 +12,18 @@ public class PlainGitClient : IGitHubClient
     private readonly ILogger<PlainGitClient> _logger;
     private readonly string _owner;
     private readonly string _repository;
+    private readonly string? _branch;
     private readonly string _localDirectory;
     private readonly TimeSpan _checkInterval;
 
     private DateTime _lastRepositoryCheck = DateTime.MinValue;
 
-    public PlainGitClient(ILogger<PlainGitClient> logger, string owner, string repository, string localDirectory, TimeSpan checkInterval)
+    public PlainGitClient(ILogger<PlainGitClient> logger, string owner, string repository, string? branch, string localDirectory, TimeSpan checkInterval)
     {
         _logger = logger;
         _owner = owner;
         _repository = repository;
+        _branch = branch;
         _localDirectory = localDirectory;
         _checkInterval = checkInterval;
     }
@@ -68,7 +70,8 @@ public class PlainGitClient : IGitHubClient
         if (!Repository.IsValid(_localDirectory))
         {
             _logger.LogInformation("Cloning repository {owner}/{repository} to {localDirectory}", _owner, _repository, _localDirectory);
-            Repository.Clone($"https://github.com/{_owner}/{_repository}.git", _localDirectory);
+            var cloneOptions = _branch == null ? null : new CloneOptions(){BranchName = _branch};
+            Repository.Clone($"https://github.com/{_owner}/{_repository}.git", _localDirectory, cloneOptions);
         }
 
         // Fetch and pull the latest changes

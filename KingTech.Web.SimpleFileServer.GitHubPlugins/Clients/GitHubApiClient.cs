@@ -5,30 +5,33 @@ namespace KingTech.Web.SimpleFileServer.GitHubPlugins.Clients;
 
 public class GitHubApiClient : IGitHubClient
 {
+    //https://raw.githubusercontent.com/KingTechNL/KingTech.Web.SimpleFileServer/main/KingTech.Web.SimpleFileServer.BasicPlugins/Sources/FileSystemFileSource.cs
     private const string RawFileBaseUrl = "https://raw.githubusercontent.com/";
 
     private readonly ILogger<GitHubApiClient> _logger;
     private readonly string _owner;
     private readonly string _repository;
+    private readonly string _branch;
 
     private readonly GitHubClient _gitHubClient;
+    private readonly Repository _repo;
 
-    public GitHubApiClient(ILogger<GitHubApiClient> logger, string owner, string repository)
+    public GitHubApiClient(ILogger<GitHubApiClient> logger, string owner, string repository, string? branch)
     {
         _logger = logger;
         _owner = owner;
         _repository = repository;
 
         _gitHubClient = new GitHubClient(new ProductHeaderValue("SimpleFileServer"));
+        _repo = _gitHubClient.Repository.Get(_owner, _repository).Result; //TODO: May throw exception.
+        _branch = branch ?? _repo.DefaultBranch;
     }
 
     /// <inheritdoc />
     public async Task<Stream> GetFile(string filePath)
     {
         //var item = await _gitHubClient.Repository.Content.GetRawContent(_owner, _repository, filePath);
-        var repo = await _gitHubClient.Repository.Get(_owner, _repository);
-        var branch = repo.DefaultBranch; //TODO: Make branch configurable.
-        var url = Path.Combine(RawFileBaseUrl, _owner, _repository, branch, filePath);
+        var url = Path.Combine(RawFileBaseUrl, _owner, _repository, _branch, filePath);
 
         return await GetStreamFromUrl(url);
     }
@@ -36,7 +39,7 @@ public class GitHubApiClient : IGitHubClient
     /// <inheritdoc />
     public async Task<IEnumerable<string>> GetFiles(string directory)
     {
-        var items = await _gitHubClient.Repository.Content.GetAllContents(_owner, _repository);
+        var items = await _gitHubClient.Repository.Content.GetAllContentsByRef(_owner, _repository, directory, _branch);
         if (items == null)
             throw new Exception("Failed to get content from GitHub API client.");
 
@@ -50,7 +53,7 @@ public class GitHubApiClient : IGitHubClient
     /// <inheritdoc />
     public async Task<IEnumerable<string>> GetDirectories(string directory)
     {
-        var items = await _gitHubClient.Repository.Content.GetAllContents(_owner, _repository);
+        var items = await _gitHubClient.Repository.Content.GetAllContentsByRef(_owner, _repository, directory, _branch);
         if (items == null)
             throw new Exception("Failed to get content from GitHub API client.");
 

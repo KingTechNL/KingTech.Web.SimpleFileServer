@@ -76,8 +76,6 @@ namespace KingTech.Web.SimpleFileServer.Controllers
                 return BadRequest($"No content type found for {fileName} ({fileName})");
             }
 
-            file.File.Position = 0; //Some transformers might leave position somewhere else. TODO: Does this need to be in the transform loop?
-
             return new FileStreamResult(file.File, contentType); //TODO: Return clear error status codes on exceptions.
         }
 
@@ -187,6 +185,9 @@ namespace KingTech.Web.SimpleFileServer.Controllers
                     }
                 }
             }
+
+            //TODO: This seems to cause problems with 'web' streams.
+            file.File.Position = 0; //Some transformers might leave position somewhere else.
         }
     }
 }

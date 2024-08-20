@@ -16,12 +16,12 @@ public class GitHubFileSource : FileSourceBase<GitHubFileSourceSettings>
         if (settings.Mode == GitHubMode.Api)
         {
             _client = new GitHubApiClient(loggerFactory.CreateLogger<GitHubApiClient>(), settings.Owner,
-                settings.Repository);
+                settings.Repository, settings.Branch);
         }
         else
         {
             _client = new PlainGitClient(loggerFactory.CreateLogger<PlainGitClient>(), settings.Owner,
-                settings.Repository, settings.LocalDirectory, settings.CheckInterval);
+                settings.Repository, settings.Branch, settings.LocalDirectory, settings.CheckInterval);
         }
     }
 

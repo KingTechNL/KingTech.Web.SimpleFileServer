@@ -24,6 +24,11 @@ public class GitHubFileSourceSettings : IFileSourceSettings
     /// The GitHub repository to use as file source.
     /// </summary>
     public string Repository { get; set; }
+    /// <summary>
+    /// The repository branch to use.
+    /// If left empty, the repository's default branch will be used.
+    /// </summary>
+    public string? Branch { get; set; }
 
     /// <summary>
     /// If using plain git: The local directory to clone the git repository in.
@@ -35,7 +40,7 @@ public class GitHubFileSourceSettings : IFileSourceSettings
     /// Checking will only be done once information is requested.
     /// Default value is 1 minute.
     /// </summary>
-    public TimeSpan CheckInterval { get; set; } = TimeSpan.FromSeconds(1);
+    public TimeSpan CheckInterval { get; set; } = TimeSpan.FromMinutes(1);
 
     /// <inheritdoc/>
     public bool Verify(ref List<string> errors)
