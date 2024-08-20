@@ -22,37 +22,50 @@ public class GitHubApiClient : IGitHubClient
         _gitHubClient = new GitHubClient(new ProductHeaderValue("SimpleFileServer"));
     }
 
-    public async Task<GitItem> GetItem(string filePath)
+    /// <inheritdoc />
+    public async Task<Stream> GetFile(string filePath)
     {
         //var item = await _gitHubClient.Repository.Content.GetRawContent(_owner, _repository, filePath);
         var repo = await _gitHubClient.Repository.Get(_owner, _repository);
         var branch = repo.DefaultBranch; //TODO: Make branch configurable.
         var url = Path.Combine(RawFileBaseUrl, _owner, _repository, branch, filePath);
 
-        
-
-        return new GitItem()
-        {
-            Name = Path.GetFileName(filePath),
-            Type = ItemType.File,
-            Url = url, //TODO: I wont have this for the local github dir files...
-            fileStream = await GetStreamFromUrl(url), //TODO: I can add streams for all files in the GetItems...
-        };
+        return await GetStreamFromUrl(url);
     }
 
-    public async Task<IEnumerable<GitItem>> GetItems(string directory)
+    /// <inheritdoc />
+    public async Task<IEnumerable<string>> GetFiles(string directory)
     {
         var items = await _gitHubClient.Repository.Content.GetAllContents(_owner, _repository);
         if (items == null)
             throw new Exception("Failed to get content from GitHub API client.");
 
-        var gitItems = items.Select(item => new GitItem() {Name = item.Name, Type = item.Type == ContentType.Dir ? ItemType.Directory : ItemType.File, Url = item.Url}).ToList();
+        var gitItems = items.Where(item => item.Type == ContentType.File).Select(item => item.Name);
 
         GetRateLimits();
 
         return gitItems;
     }
 
+    /// <inheritdoc />
+    public async Task<IEnumerable<string>> GetDirectories(string directory)
+    {
+        var items = await _gitHubClient.Repository.Content.GetAllContents(_owner, _repository);
+        if (items == null)
+            throw new Exception("Failed to get content from GitHub API client.");
+
+        var gitItems = items.Where(item => item.Type == ContentType.Dir).Select(item => item.Name);
+
+        GetRateLimits();
+
+        return gitItems;
+    }
+
+    /// <summary>
+    /// Create a stream from a URL.
+    /// </summary>
+    /// <param name="url">The URL to create a stream from.</param>
+    /// <returns>The stream for the file the URL is pointing to.</returns>
     private async Task<Stream> GetStreamFromUrl(string url)
     {
         using var client = new HttpClient();
@@ -61,6 +74,9 @@ public class GitHubApiClient : IGitHubClient
         return stream;
     }
 
+    /// <summary>
+    /// Log the API limits for debug purposes.
+    /// </summary>
     private void GetRateLimits()
     {
         // Prior to first API call, this will be null, because it only deals with the last call.

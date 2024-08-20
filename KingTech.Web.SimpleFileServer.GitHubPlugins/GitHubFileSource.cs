@@ -1,28 +1,39 @@
 ﻿using KingTech.Web.SimpleFileServer.Abstract.Models;
 using KingTech.Web.SimpleFileServer.Abstract.Sources;
+using KingTech.Web.SimpleFileServer.GitHubPlugins.Clients;
 using Microsoft.Extensions.Logging;
 
 namespace KingTech.Web.SimpleFileServer.GitHubPlugins;
 
 public class GitHubFileSource : FileSourceBase<GitHubFileSourceSettings>
 {
-    public GitHubFileSource(ILogger<GitHubFileSource> logger, GitHubFileSourceSettings settings) : base(settings)
+    private readonly ILogger<GitHubFileSource> _logger;
+    private readonly IGitHubClient _client;
+
+    public GitHubFileSource(ILoggerFactory loggerFactory, GitHubFileSourceSettings settings) : base(settings)
     {
-        
+        _logger = loggerFactory.CreateLogger<GitHubFileSource>();
+        if (settings.Mode == GitHubMode.Api)
+        {
+            _client = new GitHubApiClient(loggerFactory.CreateLogger<GitHubApiClient>(), settings.Owner,
+                settings.Repository);
+        }
+        else
+        {
+            _client = new PlainGitClient(loggerFactory.CreateLogger<PlainGitClient>(), settings.Owner,
+                settings.Repository, settings.LocalDirectory, settings.CheckInterval);
+        }
     }
 
-    public override Task<StoredFile> GetFile(string fileName)
+    public override async Task<StoredFile> GetFile(string fileName)
     {
-        throw new NotImplementedException();
+        var stream = await _client.GetFile(fileName);
+        if (stream == null)
+            return null;
+        return new StoredFile(fileName, stream);
     }
 
-    public override Task<IEnumerable<string>> ListFiles(string? directory)
-    {
-        throw new NotImplementedException();
-    }
+    public override async Task<IEnumerable<string>> ListFiles(string? directory) => await _client.GetFiles(directory);
 
-    public override Task<IEnumerable<string>> ListDirectories(string? directory)
-    {
-        throw new NotImplementedException();
-    }
+    public override async Task<IEnumerable<string>> ListDirectories(string? directory) => await _client.GetDirectories(directory);
 }
