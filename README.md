@@ -70,7 +70,7 @@ Additionally, the 'transform=thumb' query parameter can be passed. This automati
 | ThumbnailHeight | 100 | The height of the resulting image. |
 | KeepThumbnailAspectRatio | true | Whether or not to keep the image aspect ration intact. |
 
-## OneDrive plugins
+## OneDrive FileSource plugin
 There is an experimental OneDrive plugin available for the SimpleFileServer.
 This plugin allows SimpleFileServer to use OneDrive as a file source. In order for the SimpleFileServer to access a OneDrive drive, a new App Registration needs to be made on portal.azure.com.
 
@@ -85,3 +85,21 @@ All attempts on getting access to a personal onedrive have failed.
 | ClientSecretCredentials.ClientId | "" | The ID of the Client (app registration) that will be used for authentication. |
 | ClientSecretCredentials.TenantId | "" | The Tenant the drive is part of. |
 | ClientSecretCredentials.ClientSecret | "" | The Secret that will be used for authentication. |
+
+
+## GitHub FileSource plugin
+GitHub can be used as a FileSource via an optional plugin.
+This plugin allows SimpleFileServer to get files from a specified GitHub repository via either the GitHub API or the plain Git protocol.
+
+The GitHub API has a request limit of 60 per hour and therefor is only usable for very low traffic file.
+The plain Git mode is more usable for high traffic file servers, it will clone the Git repository locally and periodically update it (once a minute by default).
+
+| Setting | Default | Description |
+| -- | -- | -- |
+| Enabled | false | Whether or not this file source should be enabled. |
+| Owner | "" | The owner of the GitHub repository. |
+| Repository | "" | The repository to checkout. |
+| Mode | Api | The mode of this source (Api / Git). |
+| Branch | default | The branch to checkout, if not set this plugin will use the default branch of the chosen repository. |
+| LocalDirectory | "" | If using plain git: The local directory to clone the git repository in. |
+| CheckInterval | 00:01:00 | If using plain git: The minimum time SimpleFileServer wait until checking if the local repository is up to date. |
