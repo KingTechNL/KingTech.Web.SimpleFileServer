@@ -39,24 +39,26 @@ public class PlainGitClient : IGitHubClient
         return Task.FromResult((Stream) stream);
     }
 
-    public Task<IEnumerable<string>> GetFiles(string directory)
+    public Task<IEnumerable<string>> GetFiles(string? directory)
     {
         //Check if we are up-to-date.
         if (!CheckIfLocalRepositoryIsUpToDate())
             Pull();
 
-        var files = Directory.GetFiles(_localDirectory).Select(f => Path.GetFileName(f));
+        var path = Path.Combine(_localDirectory, directory ?? string.Empty);
+        var files = Directory.GetFiles(path).Select(f => Path.GetFileName(f));
 
         return Task.FromResult(files);
     }
 
-    public Task<IEnumerable<string>> GetDirectories(string directory)
+    public Task<IEnumerable<string>> GetDirectories(string? directory)
     {
         //Check if we are up-to-date.
         if (!CheckIfLocalRepositoryIsUpToDate())
             Pull();
 
-        var directories = Directory.GetDirectories(_localDirectory).Select(f => Path.GetFileName(f));
+        var path = Path.Combine(_localDirectory, directory ?? string.Empty);
+        var directories = Directory.GetDirectories(path).Select(f => Path.GetFileName(f));
 
         return Task.FromResult(directories);
     }
