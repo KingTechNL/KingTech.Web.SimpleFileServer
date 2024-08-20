@@ -5,7 +5,7 @@ namespace KingTech.Web.SimpleFileServer.GitHubPlugins.Clients;
 
 public class PlainGitClient : IGitHubClient
 {
-    private const string Remote = "remote";
+    private const string Remote = "origin";
     private const string SignatureName = "SimpleFileServer";
     private const string SignatureEmail = "your-email@example.com";
 
@@ -34,7 +34,8 @@ public class PlainGitClient : IGitHubClient
         if (!CheckIfLocalRepositoryIsUpToDate())
             Pull();
 
-        var stream = File.Open(itemPath, FileMode.Open);
+        var file = Path.Combine(_localDirectory, itemPath);
+        var stream = File.Open(file, FileMode.Open);
         return Task.FromResult((Stream) stream);
     }
 

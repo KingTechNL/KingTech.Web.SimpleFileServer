@@ -39,6 +39,9 @@ public class GitHubApiClient : IGitHubClient
     /// <inheritdoc />
     public async Task<IEnumerable<string>> GetFiles(string directory)
     {
+        if(string.IsNullOrWhiteSpace(directory))
+            directory = "/";
+
         var items = await _gitHubClient.Repository.Content.GetAllContentsByRef(_owner, _repository, directory, _branch);
         if (items == null)
             throw new Exception("Failed to get content from GitHub API client.");
@@ -53,6 +56,9 @@ public class GitHubApiClient : IGitHubClient
     /// <inheritdoc />
     public async Task<IEnumerable<string>> GetDirectories(string directory)
     {
+        if (string.IsNullOrWhiteSpace(directory))
+            directory = "/";
+
         var items = await _gitHubClient.Repository.Content.GetAllContentsByRef(_owner, _repository, directory, _branch);
         if (items == null)
             throw new Exception("Failed to get content from GitHub API client.");
