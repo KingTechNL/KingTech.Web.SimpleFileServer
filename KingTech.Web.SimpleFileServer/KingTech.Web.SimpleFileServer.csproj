@@ -8,9 +8,10 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	<DockerfileFile>../Dockerfile</DockerfileFile>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
   </PropertyGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
     <PackageReference Include="Seq.Extensions.Logging" Version="8.0.0" />
@@ -26,9 +27,23 @@
 	</ItemGroup>
 	-->
 
+	<!-- Add docker properties for testing from Visual Studio -->
 	<PropertyGroup>
 		<!--<DockerfileRunArguments>-v "C:/dev/_data/SimpleFileServer/Files:/files:rw" -v "C:/dev/_data/SimpleFileServer/Plugins/:/plugins:rw"</DockerfileRunArguments>-->
 		<DockerfileRunArguments>-v "C:/dev/_data/SimpleFileServer/Files:/files:rw" -v "$(TargetDir)/Plugins/:/plugins:rw"</DockerfileRunArguments>
 	</PropertyGroup>
+
+	<!-- Share internal methods/classes with unittest projects -->
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>$(AssemblyName).UnitTests</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>KingTech.Web.SimpleFileServer.UnitTests</_Parameter1>
+		</AssemblyAttribute>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>KingTech.Web.SimpleFileServer.UnitTests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 
 </Project>

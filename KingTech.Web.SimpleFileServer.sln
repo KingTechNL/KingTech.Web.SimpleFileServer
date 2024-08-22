@@ -20,7 +20,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTech.Web.SimpleFileServer.OneDrivePlugin", "KingTech.Web.SimpleFileServer.OneDrivePlugin\KingTech.Web.SimpleFileServer.OneDrivePlugin.csproj", "{9A0062D0-2DDC-4CD3-B708-A8AAC9FC18FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KingTech.Web.SimpleFileServer.GitHubPlugins", "KingTech.Web.SimpleFileServer.GitHubPlugins\KingTech.Web.SimpleFileServer.GitHubPlugins.csproj", "{7E8BB51F-B2BD-4B3A-908C-664C595A77BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTech.Web.SimpleFileServer.GitHubPlugins", "KingTech.Web.SimpleFileServer.GitHubPlugins\KingTech.Web.SimpleFileServer.GitHubPlugins.csproj", "{7E8BB51F-B2BD-4B3A-908C-664C595A77BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KingTech.Web.SimpleFileServer.UnitTests", "KingTech.Web.SimpleFileServer.UnitTests\KingTech.Web.SimpleFileServer.UnitTests.csproj", "{D50BC86D-93C9-470F-9FF1-CF34F82B6CC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,10 @@ Global
 		{7E8BB51F-B2BD-4B3A-908C-664C595A77BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E8BB51F-B2BD-4B3A-908C-664C595A77BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E8BB51F-B2BD-4B3A-908C-664C595A77BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D50BC86D-93C9-470F-9FF1-CF34F82B6CC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D50BC86D-93C9-470F-9FF1-CF34F82B6CC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D50BC86D-93C9-470F-9FF1-CF34F82B6CC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D50BC86D-93C9-470F-9FF1-CF34F82B6CC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
