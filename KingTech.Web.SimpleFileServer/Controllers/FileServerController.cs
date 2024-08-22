@@ -1,9 +1,11 @@
 using System.Collections.Immutable;
+using System.ComponentModel.Design;
 using System.Text.Encodings.Web;
 using System.Web;
 using KingTech.Web.SimpleFileServer.Abstract.Models;
 using KingTech.Web.SimpleFileServer.Abstract.Sources;
 using KingTech.Web.SimpleFileServer.Abstract.Transformers;
+using KingTech.Web.SimpleFileServer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 
@@ -13,20 +15,18 @@ namespace KingTech.Web.SimpleFileServer.Controllers
     [Route("/")]
     public class FileServerController : ControllerBase
     {
-        private const string TransformerParameterKey = "transform";
-
         private readonly ILogger<FileServerController> _logger;
         private readonly GeneralSettings _generalSettings;
-        private readonly IEnumerable<ITransformer> _transformers;
-        private readonly IEnumerable<IFileSource> _sources;
+        private readonly IFileSourceService _fileSourceService;
+        private readonly ITransformerService _transformerService;
 
-        public FileServerController(ILogger<FileServerController> logger, GeneralSettings generalSettings,
-            IEnumerable<ITransformer> transformers, IEnumerable<IFileSource> sources)
+        public FileServerController(ILogger<FileServerController> logger, GeneralSettings generalSettings, 
+            IFileSourceService fileSourceService, ITransformerService transformerService)
         {
             _logger = logger;
             _generalSettings = generalSettings;
-            _transformers = transformers;
-            _sources = sources.Where(s => s.Enabled);
+            _fileSourceService = fileSourceService;
+            _transformerService = transformerService;
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
 
             //Get file from source.
             fileName = HttpUtility.UrlDecode(fileName);
-            var file = await LoadFromSource(fileName);
+            var file = await _fileSourceService.GetFile(fileName);
             
             if (file == null)
             {
@@ -66,7 +66,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
             var args = HttpContext.Request.Query.ToImmutableDictionary(
                 k => k.Key,
                 v => (IEnumerable<string>) v.Value.ToList());
-            Transform(file, args);
+            _transformerService.Transform(file, args);
 
             //Determine the Content Type of the File.
             var contentTypeFound = new FileExtensionContentTypeProvider().TryGetContentType(fileName, out var contentType);
@@ -101,13 +101,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
                 directory = HttpUtility.UrlDecode(directory);
 
             //Get list of files from all sources.
-            var files = new List<string>();
-            foreach (var source in _sources)
-            {
-                var sourceFiles = await source.ListFiles(directory);
-                if(sourceFiles != null && sourceFiles.Any())
-                    files.AddRange(sourceFiles);
-            }
+            var files = await _fileSourceService.GetFiles(directory);
 
             return Ok(files); //TODO: Return clear error status codes on exceptions.
         }
@@ -135,59 +129,10 @@ namespace KingTech.Web.SimpleFileServer.Controllers
                 directory = HttpUtility.UrlDecode(directory);
 
             //Get list of (sub) directories from all sources.
-            var directories = new List<string>();
-            foreach (var source in _sources)
-            {
-                var sourceDirectories = await source.ListDirectories(directory);
-                if (sourceDirectories != null && sourceDirectories.Any())
-                    directories.AddRange(sourceDirectories);
-            }
+            var directories = await _fileSourceService.GetDirectories(directory);
 
             return Ok(directories); //TODO: Return clear error status codes on exceptions.
         }
 
-        /// <summary>
-        /// Load the file using the registered filesources.
-        /// </summary>
-        /// <param name="fileName">Filename (minus the postfix for transformers).</param>
-        /// <returns>The loaded file including metadata, or null if no such file was found.</returns>
-        private async Task<StoredFile> LoadFromSource(string fileName)
-        {
-            StoredFile file = null;
-            foreach (var source in _sources)
-            {
-                file = await source.GetFile(fileName);
-                if (file != null)
-                    break;
-            }
-
-            return file;
-        }
-
-        /// <summary>
-        /// Transform a StoredFile using the registered transformers.
-        /// </summary>
-        /// <param name="file">The file to transform.</param>
-        /// <param name="arguments">The arguments passed in the original request, used for tranforming the file.</param>
-        private void Transform(StoredFile file, ImmutableDictionary<string, IEnumerable<string?>> arguments)
-        {
-            //Get all requested transformers.
-            if(!arguments.TryGetValue(TransformerParameterKey, out var transformers))
-                   return; //No transformation required.
-
-            foreach (var requestedTransformer in transformers)
-            {
-                foreach (var transformer in _transformers)
-                {
-                    if(transformer.Match(requestedTransformer, file) && !transformer.Transform(file, requestedTransformer, arguments))
-                    {
-                        _logger.LogWarning("{transformer} failed to transform file {@File}", transformer.GetType().Name, file);
-                    }
-                }
-            }
-
-            //TODO: This seems to cause problems with 'web' streams.
-            file.File.Position = 0; //Some transformers might leave position somewhere else.
-        }
     }
 }

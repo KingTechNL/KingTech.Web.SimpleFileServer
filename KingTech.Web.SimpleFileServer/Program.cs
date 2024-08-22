@@ -2,6 +2,7 @@ using KingTech.Web.SimpleFileServer;
 using KingTech.Web.SimpleFileServer.Abstract.Sources;
 using KingTech.Web.SimpleFileServer.Abstract.Transformers;
 using KingTech.Web.SimpleFileServer.Plugins;
+using KingTech.Web.SimpleFileServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ var logLevel = builder.Configuration.GetLogLevel();
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IFileSourceService, FileSourceService>();
+builder.Services.AddSingleton<ITransformerService, TransformerService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
