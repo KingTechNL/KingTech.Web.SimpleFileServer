@@ -17,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Configure<GeneralSettings>();
+builder.Configure<PluginSettings>();
 
 // Load transformer and file source plugins.
 var config = builder.Configuration.GetConfiguration<PluginSettings>();

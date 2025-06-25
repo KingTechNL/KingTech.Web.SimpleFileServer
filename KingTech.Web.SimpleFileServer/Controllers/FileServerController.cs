@@ -42,25 +42,25 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// <summary>
         /// Get a specific file from the file server.
         /// </summary>
-        /// <param name="fileName">The name of the file to fetch, including its path from the base directory.</param>
+        /// <param name="filePath">The name of the file to fetch, including its path from the base directory.</param>
         /// <returns>The specified file from the server as a file-stream.</returns>
-        [HttpGet("{fileName}")]
+        [HttpGet("file/{*filePath}")]
         [ProducesResponseType(typeof(FileStreamResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetFile(string fileName)
+        public IActionResult GetFile(string filePath)
         {
             //Check parameters
-            if (string.IsNullOrWhiteSpace(fileName))
+            if (string.IsNullOrWhiteSpace(filePath))
                 return BadRequest("Invalid file name passed");
 
             //Get file from source.
-            fileName = HttpUtility.UrlDecode(fileName);
-            var file = LoadFromSource(fileName);
+            filePath = HttpUtility.UrlDecode(filePath);
+            var file = LoadFromSource(filePath);
             
             if (file == null)
             {
-                _logger.LogError("No file found for '{file}'.", fileName);
-                return BadRequest($"No file found for '{fileName}'.");
+                _logger.LogError("No file found for '{file}'.", filePath);
+                return BadRequest($"No file found for '{filePath}'.");
             }
 
             //Transform file if needed.
@@ -70,11 +70,11 @@ namespace KingTech.Web.SimpleFileServer.Controllers
             Transform(file, args);
 
             //Determine the Content Type of the File.
-            var contentTypeFound = new FileExtensionContentTypeProvider().TryGetContentType(fileName, out var contentType);
+            var contentTypeFound = new FileExtensionContentTypeProvider().TryGetContentType(filePath, out var contentType);
             if (!contentTypeFound || string.IsNullOrWhiteSpace(contentType))
             {
-                _logger.LogError("No content type found for {file} ({cleanFileName})", file, fileName);
-                return BadRequest($"No content type found for {fileName} ({fileName})");
+                _logger.LogError("No content type found for {file} ({cleanFileName})", file, filePath);
+                return BadRequest($"No content type found for {filePath} ({filePath})");
             }
 
             file.File.Position = 0; //Some transformers might leave position somewhere else. TODO: Does this need to be in the transform loop?
@@ -96,7 +96,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// </summary>
         /// <param name="directory">The directory path (from the base-directory) to list all files in.</param>
         /// <returns>A list of file names.</returns>
-        [HttpGet("list/{directory}")]
+        [HttpGet("list/{*directory}")]
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         public IActionResult ListFiles(string? directory)
         {
@@ -130,7 +130,7 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// </summary>
         /// <param name="directory">the directory path to get sub-directories for based on the base-directory.</param>
         /// <returns>A list of directory names.</returns>
-        [HttpGet("directories/{directory}")]
+        [HttpGet("directories/{*directory}")]
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         public IActionResult ListDirectories(string? directory)
         {

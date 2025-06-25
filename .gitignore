@@ -347,3 +347,4 @@ healthchecksdb
 
 *.DS_Store
 /Kingtech.Web.FrontOffice/wwwroot/data
+/KingTech.Web.SimpleFileServer.Abstract.NuGet/KingTech.Web.SimpleFileServer.Abstract.NuGet.GeneratedMSBuildEditorConfig.editorconfig

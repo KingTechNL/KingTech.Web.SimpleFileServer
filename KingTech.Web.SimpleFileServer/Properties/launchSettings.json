@@ -14,7 +14,10 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PluginSettings__PluginDirectories__0": "C:/dev/_data/SimpleFileServer/Plugins",
+        "FileSystemFileSourceSettings__BaseDirectory": "C:/dev/_data/SimpleFileServer/Files",
+        "FileSystemFileSourceSettings__IsReadOnly": "true"
       },
       "applicationUrl": "https://localhost:7029;http://localhost:5029",
       "dotnetRunMessages": true

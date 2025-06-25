@@ -8,10 +8,10 @@ public class PluginSettings
     /// <summary>
     /// Directories to load plugins from.
     /// </summary>
-    public List<string> PluginDirectories { get; set; }
+    public List<string> PluginDirectories { get; set; } = new ();
 
     /// <summary>
     /// Regexes to define which files/directories should be excluded from plugin loading.
     /// </summary>
-    public List<string> ExcludeRegexes { get; set; } = new List<string>();
+    public List<string> ExcludeRegexes { get; set; } = new ();
 }

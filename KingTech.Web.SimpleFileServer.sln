@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTech.Web.SimpleFileServ
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{62821E71-C71C-4CA3-B335-BC20E70DDE34}"
 	ProjectSection(SolutionItems) = preProject
-		.dockerignore = .dockerignore
 		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
+		.github\workflows\dotnet_build.yml = .github\workflows\dotnet_build.yml
 		entrypoint.sh = entrypoint.sh
 		README.md = README.md
 	EndProjectSection
