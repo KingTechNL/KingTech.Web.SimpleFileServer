@@ -15,7 +15,7 @@ EXPOSE 443
 
 #do not run as root (but allow ports below 1024)
 RUN setcap 'cap_net_bind_service=+ep' /app/KingTech.Web.SimpleFileServer.dll
-RUN addgroup --system appgroup && adduser --ingroup appgroup --system appuser && chown -R appuser /app /tmp /usr/share /plugins
+RUN addgroup --system appgroup && adduser --ingroup appgroup --system appuser && chown -R appuser /app /tmp /usr/share /plugins /files
 USER appuser
 
 # Set dotnet environment to production
