@@ -19,14 +19,16 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         private readonly GeneralSettings _generalSettings;
         private readonly IEnumerable<ITransformer> _transformers;
         private readonly IEnumerable<IFileSource> _sources;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public FileServerController(ILogger<FileServerController> logger, GeneralSettings generalSettings,
-            IEnumerable<ITransformer> transformers, IEnumerable<IFileSource> sources)
+            IEnumerable<ITransformer> transformers, IEnumerable<IFileSource> sources, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _generalSettings = generalSettings;
             _transformers = transformers;
             _sources = sources;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -48,6 +50,10 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetFile(string filePath)
         {
+            // Get the client that requested the file, if available.
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
+            _logger.LogDebug("{method} for {file} called by: {ipAddress}", nameof(GetFile), filePath, ipAddress);
+
             //Check parameters
             if (string.IsNullOrWhiteSpace(filePath))
                 return BadRequest("Invalid file name passed");
@@ -99,8 +105,12 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         public IActionResult ListFiles(string? directory)
         {
+            // Get the client that requested the file, if available.
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
+            _logger.LogDebug("{method} for {file} called by: {ipAddress}", nameof(ListFiles), directory, ipAddress);
+
             //Convert url encoded string back to normal string.
-            if(!string.IsNullOrEmpty(directory))
+            if (!string.IsNullOrEmpty(directory))
                 directory = HttpUtility.UrlDecode(directory);
 
             //Get list of files from all sources.
@@ -133,6 +143,10 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
         public IActionResult ListDirectories(string? directory)
         {
+            // Get the client that requested the file, if available.
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
+            _logger.LogDebug("{method} for {file} called by: {ipAddress}", nameof(ListDirectories), directory, ipAddress);
+
             //Convert url encoded string back to normal string.
             if (!string.IsNullOrEmpty(directory))
                 directory = HttpUtility.UrlDecode(directory);
@@ -155,8 +169,19 @@ namespace KingTech.Web.SimpleFileServer.Controllers
         /// <returns>The current version of SimpleFileServer.</returns>
         [HttpGet("version")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public IActionResult Version() =>
-            Ok(Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown");
+        public IActionResult GetVersion()
+        {
+            // Get the client that requested the file, if available.
+            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress;
+            _logger.LogDebug("{method} called by: {ipAddress}", nameof(GetVersion), ipAddress);
+
+            var informationalVersion = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion;
+
+            return Ok(informationalVersion ?? "Unknown");
+        }
 
         /// <summary>
         /// Load the file using the registered filesources.

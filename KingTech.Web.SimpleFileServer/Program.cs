@@ -2,6 +2,7 @@ using KingTech.Web.SimpleFileServer;
 using KingTech.Web.SimpleFileServer.Abstract.Sources;
 using KingTech.Web.SimpleFileServer.Abstract.Transformers;
 using KingTech.Web.SimpleFileServer.Plugins;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.AddSeq();
 var logLevel = builder.Configuration.GetLogLevel();
 
 // Add services to the container.
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -47,6 +49,12 @@ if (app.Environment.IsDevelopment() || Environment.GetEnvironmentVariable("ENABL
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Enable forwarding of headers
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 app.UseHttpsRedirection();
 
