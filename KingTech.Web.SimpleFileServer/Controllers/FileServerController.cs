@@ -1,10 +1,9 @@
 using System.Collections.Immutable;
-using System.Text.Encodings.Web;
+using System.Reflection;
 using System.Web;
 using KingTech.Web.SimpleFileServer.Abstract.Models;
 using KingTech.Web.SimpleFileServer.Abstract.Sources;
 using KingTech.Web.SimpleFileServer.Abstract.Transformers;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 
@@ -149,6 +148,15 @@ namespace KingTech.Web.SimpleFileServer.Controllers
 
             return Ok(directories);
         }
+
+        /// <summary>
+        /// Get the current version of SimpleFileServer.
+        /// </summary>
+        /// <returns>The current version of SimpleFileServer.</returns>
+        [HttpGet("version")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public IActionResult Version() =>
+            Ok(Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown");
 
         /// <summary>
         /// Load the file using the registered filesources.
