@@ -6,7 +6,7 @@ WORKDIR /app
 COPY KingTech.Web.SimpleFileServer/bin/Release/net8.0 .
 COPY KingTech.Web.SimpleFileServer.BasicPlugins/bin/Release/net8.0 ./basicplugins
 COPY entrypoint.sh .
-RUN mkdir -p /plugins
+RUN mkdir -p /plugins /files
 RUN chmod +x entrypoint.sh
 RUN dos2unix entrypoint.sh
 
